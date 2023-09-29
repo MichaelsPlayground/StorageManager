@@ -12,6 +12,7 @@ import android.widget.AutoCompleteTextView;
 public class TakePhotoActivity extends AppCompatActivity {
     private static final String TAG = TakePhotoActivity.class.getSimpleName();
     private AutoCompleteTextView chooseUnitNumber;
+    private String selectedUnitNumber;
     private DBUnitHandler dbUnitHandler;
 
     @Override
@@ -20,6 +21,7 @@ public class TakePhotoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_take_photo);
 
         dbUnitHandler = new DBUnitHandler(TakePhotoActivity.this);
+        selectedUnitNumber = "";
 
         chooseUnitNumber = findViewById(R.id.chooseUnitNumber);
         String[] unitNumbers = dbUnitHandler.getUnitNumbers();
@@ -31,8 +33,11 @@ public class TakePhotoActivity extends AppCompatActivity {
         chooseUnitNumber.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String choiceString = chooseUnitNumber.getText().toString();
-                Log.d(TAG, "selected unit: " + choiceString);
+                selectedUnitNumber = chooseUnitNumber.getText().toString();
+                Log.d(TAG, "selected unit number: " + selectedUnitNumber);
+                // take a photo, crop it and store it
+
+
             }
         });
 
