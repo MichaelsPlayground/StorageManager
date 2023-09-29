@@ -23,13 +23,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Objects;
 
-public class DatabaseImportFile extends AppCompatActivity {
+public class DatabaseImportFileEncrypted extends AppCompatActivity {
 
     Context contextImportFile; // wird für read a file from uri benötigt
 
-    Button importDatabaseFromFile;
+    Button btnImportDatabase, btnChooseImportFile;
     int minimumPassphraseLength = 4; // todo check password length
-    DBUnitHandler dbUnitHandler;
+    DBHandler dbHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,13 +39,50 @@ public class DatabaseImportFile extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        dbUnitHandler = new DBUnitHandler(DatabaseImportFile.this);
+        dbHandler = new DBHandler(DatabaseImportFileEncrypted.this);
 
-        importDatabaseFromFile = (Button) findViewById(R.id.btnImportDatabaseFromFile);
-        importDatabaseFromFile.setOnClickListener(new View.OnClickListener() {
+        btnImportDatabase = (Button) findViewById(R.id.btnImportDatabaseFromFile);
+        btnImportDatabase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                contextImportFile = v.getContext(); // Context context1;
+                // get the passphrase
+                EditText etPassphrase = (EditText) findViewById(R.id.etPassphraseImport);
+                int passphraseLength = 0;
+                if (etPassphrase != null) {
+                    passphraseLength = etPassphrase.length();
+                }
+                // todo check for minimum length
+                // get the passphrase as char[]
+                char[] passphrase = new char[passphraseLength];
+                etPassphrase.getText().getChars(0, passphraseLength, passphrase, 0);
+                // get the data from edittext and split into lines
+                EditText etData = (EditText) findViewById(R.id.etDatabaseContentImport);
+                String items = etData.getText().toString();
+                String dataImport = Cryptography.decryptFileAesGcmFromBase64(passphrase, items);
+                String[] dataImportLines = dataImport.split("\n");
+                if (dataImportLines.length > 0) {
+                    for (int i = 0; i < dataImportLines.length; i++) {
+                        // split string into parts
+                        String[] fields = dataImportLines[i].split("##");
+                        // Kategorie##Beschreibung##Login Name##Login Passwort##Favorit
+                        // the following line is FALSE and just for importing the WRONG export ONE time
+                        //dbHandler.addNewEntry(fields[0], fields[1], fields[2], fields[3], fields[4]);
+                        // the following line is the correct one
+                        dbHandler.addNewEntry(fields[1], fields[2], fields[3], fields[0], fields[4]);
+                    }
+                }
+                // return to main activity
+                Intent i = new Intent(DatabaseImportFileEncrypted.this, MainActivity.class);
+                startActivity(i);
+            }
+        });
+
+        btnChooseImportFile = (Button) findViewById(R.id.btnChooseImportFile);
+        btnChooseImportFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                contextImportFile = btnChooseImportFile.getContext(); // Context context1;
                 // wird für read a file from uri benötigt
                 // https://developer.android.com/training/data-storage/shared/documents-files
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);

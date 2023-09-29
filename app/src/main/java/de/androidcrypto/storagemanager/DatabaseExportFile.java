@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -19,17 +21,30 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * saves the complete unit database unencrypted in JSON encoding to a file in external storage
+ */
 public class DatabaseExportFile extends AppCompatActivity {
-    // ## version 1.02b ##
-    Button btnExportDatabase, btnSaveDatabaseToFile;
-    int minimumPassphraseLength = 4; // todo password length
+    private static final String TAG = DatabaseExportFile.class.getSimpleName();
+    // ## version 1.00 ##
+    private Button btnExportDatabaseToFile;
+    private int minimumPassphraseLength = 4; // todo password length
 
-    Context contextSave; // wird für read a file from uri benötigt
-    String fileContent = "";
+    private Context contextSave; // wird für read a file from uri benötigt
+    private final String DEFAULT_JSON_FILE_NAME = "export_";
+    private final String DEFAULT_JSON_FILE_EXTENSION = ".json";
+    private String exportFileName = "";
+    private DBUnitHandler dbUnitHandler;
+    private Gson gson;
+    private String allJsonResponse;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,75 +54,29 @@ public class DatabaseExportFile extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        btnExportDatabase = (Button) findViewById(R.id.btnExportDatabaseToFile);
-        btnExportDatabase.setOnClickListener(new View.OnClickListener() {
+        // hide soft keyboard from showing up on startup
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        // on below line we are initialing our dbhandler class.
+        dbUnitHandler = new DBUnitHandler(DatabaseExportFile.this);
+
+        btnExportDatabaseToFile = (Button) findViewById(R.id.btnExportDatabaseToFile);
+        btnExportDatabaseToFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // get the passphrase
-                EditText etPassphrase = (EditText) findViewById(R.id.etPassphraseDatabaseExport);
-                int passphraseLength = 0;
-                if (etPassphrase != null) {
-                    passphraseLength = etPassphrase.length();
+                Log.d(TAG, "export database to file");
+                List<StorageUnitModel> units = dbUnitHandler.readUnits();
+                if ((units == null) || (units.size() < 1)) {
+                    Log.d(TAG, "no units available, aborted");
+                    Toast.makeText(DatabaseExportFile.this, "No units in database", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                //System.out.println("passphrase length: " + passphraseLength);
-                // todo check for minimum length
-                // get the passphrase as char[]
-                char[] passphrase = new char[passphraseLength];
-                etPassphrase.getText().getChars(0, passphraseLength, passphrase, 0);
 
-                EditText etData = (EditText) findViewById(R.id.etDatabaseContentExport);
+                gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+                allJsonResponse = convertClassToJson(units);
+                exportFileName = DEFAULT_JSON_FILE_NAME + Utils.getExportTimestamp() + DEFAULT_JSON_FILE_EXTENSION;
 
-                // get the data from database
-                // the vars are only available in this function
-                ArrayList<EntryModel> entryModelArrayList;
-                DBHandler dbHandler;
-                dbHandler = new DBHandler(DatabaseExportFile.this);
-                // list from db handler class.
-                entryModelArrayList = dbHandler.readEntries();
-
-                // here we are generating the export data
-                String unencryptedExportData = "";
-                for (int l = 0; l < entryModelArrayList.size(); l++) {
-                    // Kategorie##Beschreibung##Login Name##Login Passwort##Favorit
-                    String exportLine = entryModelArrayList.get(l).getEntryCategory() + "##" +
-                            entryModelArrayList.get(l).getEntryName() + "##" +
-                            entryModelArrayList.get(l).getEntryLoginName() + "##" +
-                            // note this data (loginPassword) is encrypted
-                            //entryModelArrayList.get(l).getEntryLoginPassword() + "##" +
-                            Cryptography.decryptStringAesGcmFromBase64(entryModelArrayList.get(l).getEntryLoginPassword()) + "##" +
-                            entryModelArrayList.get(l).getEntryFavourite();
-                    // falsche reihenfolge, do not use this in PRODUCTION anymore
-                    String exportLineWrong = entryModelArrayList.get(l).getEntryName() + "##" +
-                            entryModelArrayList.get(l).getEntryLoginName() + "##" +
-                            // note this data (loginPassword) is encrypted
-                            //entryModelArrayList.get(l).getEntryLoginPassword() + "##" +
-                            Cryptography.decryptStringAesGcmFromBase64(entryModelArrayList.get(l).getEntryLoginPassword()) + "##" +
-                            entryModelArrayList.get(l).getEntryCategory() + "##" +
-                            entryModelArrayList.get(l).getEntryFavourite();
-                    unencryptedExportData = unencryptedExportData + exportLine + "\n";
-                }
-                //System.out.println("number of exported items: " + entryModelArrayList.size());
-                //etData.setText(unencryptedExportData);
-                String encryptedFileContent = Cryptography.encryptDatabaseAesGcmToBase64(passphrase, unencryptedExportData);
-                etData.setText(encryptedFileContent);
-                fileContent = encryptedFileContent;
-            }
-        });
-
-        btnSaveDatabaseToFile = (Button) findViewById(R.id.btnSaveDatabaseToFile);
-        btnSaveDatabaseToFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText et = (EditText) findViewById(R.id.etDatabaseContentExport);
-                String data = et.getText().toString();
-                // copy to clipboard
-                // Gets a handle to the clipboard service.
-                ClipboardManager clipboard = (ClipboardManager)
-                        getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("simple text", data);
-                // Set the clipboard's primary clip.
-                clipboard.setPrimaryClip(clip);
-                Toast.makeText(DatabaseExportFile.this, "Database ins Clipboard kopiert..", Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "### allJsonResponse: " + allJsonResponse);
 
                 contextSave = v.getContext();
                 Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
@@ -117,15 +86,10 @@ public class DatabaseExportFile extends AppCompatActivity {
                 // system file picker when it loads.
                 //boolean pickerInitialUri = false;
                 //intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
-                intent.putExtra(Intent.EXTRA_TITLE, "databaseExport.txt");
-                // deprecated startActivityForResult(intent, PICK_TXT_FILE);
+                intent.putExtra(Intent.EXTRA_TITLE, exportFileName);
                 fileSaverActivityResultLauncher.launch(intent);
-
-
             }
         });
-
-
     }
 
     ActivityResultLauncher<Intent> fileSaverActivityResultLauncher = registerForActivityResult(
@@ -143,11 +107,10 @@ public class DatabaseExportFile extends AppCompatActivity {
                             uri = resultData.getData();
                             // Perform operations on the document using its URI.
                             try {
-                                //String fileContent = et.getText().toString();
-                                writeTextToUri(uri, fileContent);
-                                // System.out.println("fileContent written: \n" + fileContent);
+                                Log.d(TAG, "*** allJsonResponse: " + allJsonResponse);
+                                writeTextToUri(uri, allJsonResponse);
                             } catch (IOException e) {
-                                e.printStackTrace();
+                                Log.e(TAG, "IOException: " + e.getMessage());
                             }
                         }
                     }
@@ -160,8 +123,13 @@ public class DatabaseExportFile extends AppCompatActivity {
             outputStreamWriter.write(data);
             outputStreamWriter.close();
         } catch (IOException e) {
-            System.out.println("Exception File write failed: " + e.toString());
+            Log.e(TAG, "IOException: " + e.getMessage());
+            return;
         }
+    }
+
+    private String convertClassToJson(List<StorageUnitModel> unitModels) {
+        return gson.toJson(unitModels);
     }
 
 }

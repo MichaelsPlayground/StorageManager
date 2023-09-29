@@ -26,6 +26,17 @@ public class Utils {
     }
 
 
+    // gives an 17 byte long timestamp yy_MM_dd_HH_mm_ss
+    public static String getExportTimestamp() {
+        // gives a 17 character long string
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return ZonedDateTime
+                    .now(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("uu_MM_dd_HH_mm_ss"));
+        } else {
+            return new SimpleDateFormat("yy_MM_dd_HH_mm_ss").format(new Date());
+        }
+    }
 
 
 /* char[] to byte[]

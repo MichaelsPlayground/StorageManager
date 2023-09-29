@@ -34,63 +34,20 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
-            android:text="Export der Datenbank"
+            android:text="Export der Datenbank in eine JSON Datei"
             android:textAlignment="center"
             android:textSize="@dimen/title_size"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvPassphrase"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="8dp"
-            android:text="Geben Sie ein Passwort für den Export ein (mindestens 4 Zeichen)"
-            android:textAlignment="center"
-            android:textSize="20sp" />
-
-
-        <EditText
-            android:id="@+id/etPassphraseDatabaseExport"
+        <Button
+            android:id="@+id/btnExportDatabaseToFile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="8dp"
-            android:hint="Passwort"
-            android:inputType="textPersonName"
-            android:minHeight="48dp" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnExportDatabaseToFile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
-                android:text="exportiere die\nDatenbank"
-                android:textAllCaps="false" />
-
-            <Button
-                android:id="@+id/btnSaveDatabaseToFile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="18dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
-                android:text="speichere die\nDatenbank in\neine Datei"
-                android:textAllCaps="false" />
-
-        </LinearLayout>
+            android:text="exportiere die\nDatenbank in\neine JSON Datei"
+            android:textAllCaps="false" />
 
         <TextView
             android:id="@+id/textView2"
@@ -100,24 +57,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="32dp"
             android:layout_marginEnd="8dp"
-            android:text="Inhalt des Exportes"
+            android:text="Hinweis: nach dem Export werden Sie wieder zu einer Fingerprint Autentifizierung aufgefordert !"
             android:textAlignment="center"
             android:textSize="20sp" />
-
-        <EditText
-            android:id="@+id/etDatabaseContentExport"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="8dp"
-            android:ems="60"
-            android:gravity="start|top"
-            android:inputType="textMultiLine"
-            android:isScrollContainer="true"
-            android:minLines="8"
-            tools:ignore="SpeakableTextPresentCheck" />
 
     </LinearLayout>
 </ScrollView>
