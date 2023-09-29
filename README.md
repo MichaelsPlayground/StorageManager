@@ -96,7 +96,15 @@ Icon background color: 3DCFDC
 
 Icon size: 44%
 
+## Dependencies
 
+```plaintext
+// biometric fingerprint
+implementation 'androidx.biometric:biometric:1.1.0'
+
+// import und export database
+implementation 'com.google.code.gson:gson:2.10.1'
+```
 
 
 

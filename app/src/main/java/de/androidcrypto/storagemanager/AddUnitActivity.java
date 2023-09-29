@@ -2,6 +2,7 @@ package de.androidcrypto.storagemanager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -108,7 +109,13 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
         addUnit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // todo add sanity checks
+                // sanity checks
+                if (!validateInput()) {
+                    Snackbar snackbar = Snackbar.make(view, "Ein oder mehrere Einträge sind leer oder zu lang - abgebrochen", Snackbar.LENGTH_LONG);
+                    snackbar.setBackgroundTint(ContextCompat.getColor(AddUnitActivity.this, R.color.orange));
+                    snackbar.show();
+                    return;
+                }
 
                 dbUnitHandler.addNewUnit(unitNumber.getText().toString(),
                         unitShortContent.getText().toString(),
@@ -185,6 +192,24 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
         });
 
          */
+    }
+
+    private boolean validateInput() {
+        boolean success = true;
+        String unitNumberString = unitNumber.getText().toString();
+        if ((TextUtils.isEmpty(unitNumberString)) || (unitNumberString.length() > 5)) return false;
+        String unitShortContentString = unitShortContent.getText().toString();
+        if ((TextUtils.isEmpty(unitShortContentString)) || (unitShortContentString.length() > 40)) return false;
+        if (TextUtils.isEmpty(unitContent.getText().toString())) return false;
+        String unitTypeString = unitType.getText().toString();
+        if ((TextUtils.isEmpty(unitTypeString)) || (unitTypeString.length() > 10)) return false;
+        String unitWeightString = unitWeight.getText().toString();
+        if ((TextUtils.isEmpty(unitWeightString)) || (unitWeightString.length() > 10)) return false;
+        String unitPlaceString = unitPlace.getText().toString();
+        if ((TextUtils.isEmpty(unitPlaceString)) || (unitPlaceString.length() > 40)) return false;
+        String unitRoomString = unitRoom.getText().toString();
+        if ((TextUtils.isEmpty(unitRoomString)) || (unitRoomString.length() > 10)) return false;
+        return success;
     }
 
     /**
