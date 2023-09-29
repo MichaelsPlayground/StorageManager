@@ -1,5 +1,6 @@
 package de.androidcrypto.storagemanager;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -272,5 +273,22 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         File f = context.getDatabasePath(DB_NAME);
         long dbSize = f.length();
         return String.valueOf(dbSize);
+    }
+
+    @SuppressLint("Range")
+    public String[] getUnitNumbers() {
+        // https://stackoverflow.com/a/44339427/8166854
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT " + UNIT_NUMBER + " FROM " + TABLE_NAME + ";";
+        Cursor c = db.rawQuery(query, null);
+        String returnString[] = new String[c.getCount()]; // # elements = rows
+        int i = 0;
+        while (c.moveToNext()) {
+            returnString[i++] = c.getString(
+                    c.getColumnIndex(UNIT_NUMBER)
+            );
+        }
+        c.close();
+        return returnString;
     }
 }

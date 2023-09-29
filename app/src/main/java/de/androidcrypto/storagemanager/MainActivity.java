@@ -225,6 +225,16 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
             }
         });
 
+        MenuItem mTakePhoto = menu.findItem(R.id.action_take_photo);
+        mTakePhoto.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent i = new Intent(MainActivity.this, TakePhotoActivity.class);
+                startActivity(i);
+                return false;
+            }
+        });
+
         MenuItem mQuit = menu.findItem(R.id.action_quit);
         mQuit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -320,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
                         dbUnitHandler.deleteAllUnits();
                         Intent i = new Intent(MainActivity.this, MainActivity.class);
                         startActivity(i);
+                        finish();
                     }
                 });
                 alertDialog.setNegativeButton("abbrechen", new DialogInterface.OnClickListener() {

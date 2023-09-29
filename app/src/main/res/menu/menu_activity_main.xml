@@ -31,6 +31,12 @@
         app:showAsAction="never"/>
 
     <item
+        android:id="@+id/action_take_photo"
+        android:icon="@drawable/ic_baseline_add_circle_outline_24"
+        android:title="take a photo"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_add"
         android:icon="@drawable/ic_baseline_add_circle_outline_24"
         android:title="@string/addEntry"
