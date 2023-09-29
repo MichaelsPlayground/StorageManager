@@ -99,8 +99,8 @@ public class DBUnitHandler extends SQLiteOpenHelper {
     }
 
     public void addNewUnit(String unitNumber, String unitShortContent, String unitContent, String unitType,
-                           String unitPlace, String unitRoom, String unitLastEdit, String unitIdServer,
-                           String unitTagUid1, String unitTagUid2, String unitTagUid3,
+                           String unitWeight,  String unitPlace, String unitRoom, String unitLastEdit,
+                           String unitIdServer, String unitTagUid1, String unitTagUid2, String unitTagUid3,
                            String unitImageFilename1, String unitImageFilename2, String unitImageFilename3,
                            String unitDeleted) {
         // on below line we are creating a variable for
@@ -118,6 +118,7 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         values.put(UNIT_SHORT_CONTENT, unitShortContent);
         values.put(UNIT_CONTENT, unitContent);
         values.put(UNIT_TYPE, unitType);
+        values.put(UNIT_WEIGHT, unitWeight);
         values.put(UNIT_PLACE, unitPlace);
         values.put(UNIT_ROOM, unitRoom);
         values.put(UNIT_LAST_EDIT, unitLastEdit);
@@ -140,11 +141,16 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void updateUnit(String unitId, String unitNumber, String unitShortContent, String unitContent, String unitType,
-                           String unitPlace, String unitRoom, String unitLastEdit, String unitIdServer,
-                           String unitTagUid1, String unitTagUid2, String unitTagUid3,
+    public void updateUnit(String unitId, String unitIdServer, String unitNumber, String unitShortContent,
+                           String unitContent, String unitType, String unitWeight, String unitPlace, String unitRoom,
+                           String unitLastEdit, String unitTagUid1, String unitTagUid2, String unitTagUid3,
                            String unitImageFilename1, String unitImageFilename2, String unitImageFilename3,
                            String unitDeleted) {
+
+        // the LastEditValue is replaced by actual one.
+        // The reason that it is in the parameter list is simple: same parameter data as for a "addUnit"
+        unitLastEdit = Utils.getShortTimestamp();
+
         // on below line we are updating a variable for
         // our sqlite database and calling writable method
         // as we are writing data in our database.
@@ -160,6 +166,7 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         values.put(UNIT_SHORT_CONTENT, unitShortContent);
         values.put(UNIT_CONTENT, unitContent);
         values.put(UNIT_TYPE, unitType);
+        values.put(UNIT_WEIGHT, unitWeight);
         values.put(UNIT_PLACE, unitPlace);
         values.put(UNIT_ROOM, unitRoom);
         values.put(UNIT_LAST_EDIT, unitLastEdit);
@@ -225,7 +232,7 @@ public class DBUnitHandler extends SQLiteOpenHelper {
                 // read data to storageUnitModel
                 unitModelArrayList.add(new StorageUnitModel(
                         cursorUnits.getString(0), // 0 = unitId
-                        cursorUnits.getString(8), // 08 = unitIdServer
+                        cursorUnits.getString(9), // 09 = unitIdServer
                         cursorUnits.getString(1),
                         cursorUnits.getString(2),
                         cursorUnits.getString(3),
@@ -233,14 +240,14 @@ public class DBUnitHandler extends SQLiteOpenHelper {
                         cursorUnits.getString(5),
                         cursorUnits.getString(6),
                         cursorUnits.getString(7),
-                        cursorUnits.getString(9),
-                        cursorUnits.getString(10),
+                        cursorUnits.getString(8),
+                        cursorUnits.getString(10), // tagUids 1-3
                         cursorUnits.getString(11),
                         cursorUnits.getString(12),
-                        cursorUnits.getString(13),
+                        cursorUnits.getString(13), // imageFilenames 1-3
                         cursorUnits.getString(14),
                         cursorUnits.getString(15),
-                        cursorUnits.getString(16))); // 0 = unitId
+                        cursorUnits.getString(16))); // 16 = unitDeleted
             } while (cursorUnits.moveToNext());
             // moving our cursor to next.
         }

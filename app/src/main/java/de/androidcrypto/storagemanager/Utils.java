@@ -1,9 +1,30 @@
 package de.androidcrypto.storagemanager;
 
+import android.os.Build;
+
+import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+
 public class Utils {
     public static void main(String[] args) {
 
     }
+
+
+    public static String getShortTimestamp() {
+        // gives a 10 characters long string 2023-09-29
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return ZonedDateTime
+                    .now(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("uuuu-MM-dd"));
+        } else {
+            return new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        }
+    }
+
 
 
 

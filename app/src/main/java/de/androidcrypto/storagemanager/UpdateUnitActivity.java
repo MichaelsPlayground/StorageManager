@@ -24,9 +24,9 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
     private com.google.android.material.textfield.TextInputEditText unitNumber, unitShortContent,
             unitContent, unitType, unitWeight, unitPlace, unitRoom, unitLastEdit, unitExternalId,
             unitTagUid1, unitTagUid2, unitTagUid3;
-    private Button addUnit, abort;
+    private Button updateUnit, abort;
 
-    private DBHandler dbHandler;
+    private DBUnitHandler dbUnitHandler;
 
     //String entryLoginName, entryLoginPassword;
 
@@ -69,10 +69,11 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         unitTagUid2 = findViewById(R.id.etUnitTagUid2);
         unitTagUid3 = findViewById(R.id.etUnitTagUid3);
 
-        addUnit = findViewById(R.id.btnAddUnit);
+        updateUnit = findViewById(R.id.btnUpdateUnit);
         abort = findViewById(R.id.btnAbort);
 
         // todo test data, remove on final
+        /*
         unitNumber.setText("B12");
         unitShortContent.setText("short content");
         unitContent.setText("long content");
@@ -80,7 +81,7 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         unitWeight.setText("leicht");
         unitPlace.setText("hinten unten links");
         unitRoom.setText("B");
-
+*/
 
 // unitName, unitShortContent,
 //            unitContent, unitType, unitWeight, unitPlace, unitRoom, unitLastEdit, unitExternalId,
@@ -90,14 +91,15 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         // on below line we are initialing our dbhandler class.
-        dbHandler = new DBHandler(UpdateUnitActivity.this);
+        dbUnitHandler = new DBUnitHandler(UpdateUnitActivity.this);
 
         // enable on create
         //etLoginPassword.setVisibility(View.VISIBLE);
         //etLoginName.setVisibility(View.VISIBLE);
 
         // on below lines we are getting data which
-        // we passed in our adapter class.
+        // we passed in our adapter class
+        String unitId = getIntent().getStringExtra("unitId");
         unitNumber.setText(getIntent().getStringExtra("unitNumber"));
         unitShortContent.setText(getIntent().getStringExtra("unitShortContent"));
         unitContent.setText(getIntent().getStringExtra("unitContent"));
@@ -110,6 +112,52 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         unitTagUid1.setText(getIntent().getStringExtra("unitTagUid1"));
         unitTagUid2.setText(getIntent().getStringExtra("unitTagUid2"));
         unitTagUid3.setText(getIntent().getStringExtra("unitTagUid3"));
+        String unitDeleted = getIntent().getStringExtra("unitDeleted");
+        String unitImageFilename1 = getIntent().getStringExtra("unitImageFilename1");
+        String unitImageFilename2 = getIntent().getStringExtra("unitImageFilename2");
+        String unitImageFilename3 = getIntent().getStringExtra("unitImageFilename3");
+
+
+        updateUnit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // todo add sanity checks
+
+                dbUnitHandler.updateUnit(
+                        unitId,
+                        unitExternalId.getText().toString(),
+                        unitNumber.getText().toString(),
+                        unitShortContent.getText().toString(),
+                        unitContent.getText().toString(),
+                        unitType.getText().toString(),
+                        unitWeight.getText().toString(),
+                        unitPlace.getText().toString(),
+                        unitRoom.getText().toString(),
+                        unitLastEdit.getText().toString(),
+                        unitTagUid1.getText().toString(),
+                        unitTagUid2.getText().toString(),
+                        unitTagUid3.getText().toString(),
+                        unitImageFilename1,
+                        unitImageFilename2,
+                        unitImageFilename3,
+                        unitDeleted);
+
+                Toast.makeText(UpdateUnitActivity.this, "Eintrag geändert..", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(UpdateUnitActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
+
+        abort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // return to home
+                Intent i = new Intent(UpdateUnitActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
 
 /*
         btnAddEntry.setOnClickListener(new View.OnClickListener() {

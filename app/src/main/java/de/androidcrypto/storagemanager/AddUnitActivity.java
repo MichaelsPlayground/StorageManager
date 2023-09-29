@@ -114,6 +114,7 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
                         unitShortContent.getText().toString(),
                         unitContent.getText().toString(),
                         unitType.getText().toString(),
+                        unitWeight.getText().toString(),
                         unitPlace.getText().toString(),
                         unitRoom.getText().toString(),
                         unitLastEdit.getText().toString(),
@@ -122,9 +123,21 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
                         unitTagUid2.getText().toString(),
                         unitTagUid3.getText().toString(),
                         "", "", "","false");
+
                 Toast.makeText(AddUnitActivity.this, "Eintrag hinzugefügt..", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(AddUnitActivity.this, MainActivity.class);
                 startActivity(i);
+                finish();
+            }
+        });
+
+        abort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // return to home
+                Intent i = new Intent(AddUnitActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
             }
         });
 

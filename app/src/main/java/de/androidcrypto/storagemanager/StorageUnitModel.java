@@ -51,9 +51,10 @@ public class StorageUnitModel {
     }
 
     // constructor for reading all units
-
-
-    public StorageUnitModel(String unitId, String unitIdServer, String unitNumber, String unitShortContent, String unitContent, String unitType, String unitWeight, String unitPlace, String unitRoomNr, String unitLastEdit, String unitTagUid1, String unitTagUid2, String unitTagUid3, String unitImageFilename1, String unitImageFilename2, String unitImageFilename3, String unitDeleted) {
+    public StorageUnitModel(String unitId, String unitIdServer, String unitNumber, String unitShortContent, String unitContent,
+                            String unitType, String unitWeight, String unitPlace, String unitRoomNr, String unitLastEdit,
+                            String unitTagUid1, String unitTagUid2, String unitTagUid3,
+                            String unitImageFilename1, String unitImageFilename2, String unitImageFilename3, String unitDeleted) {
         this.unitId = unitId;
         this.unitIdServer = unitIdServer;
         this.unitNumber = unitNumber;

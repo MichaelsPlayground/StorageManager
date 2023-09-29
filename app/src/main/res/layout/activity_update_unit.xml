@@ -37,6 +37,8 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:hint="unit number"
+                app:counterEnabled="true"
+                app:counterMaxLength="5"
                 app:boxCornerRadiusBottomEnd="5dp"
                 app:boxCornerRadiusBottomStart="5dp"
                 app:boxCornerRadiusTopEnd="5dp"
@@ -51,6 +53,7 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:text=""
+                    android:maxLength="5"
                     tools:ignore="KeyboardInaccessibleWidget" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -243,7 +246,7 @@
                 android:weightSum="2">
 
                 <Button
-                    android:id="@+id/btnAddUnit"
+                    android:id="@+id/btnUpdateUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="4dp"
