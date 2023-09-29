@@ -49,8 +49,6 @@ public class UnitRVAdapter extends RecyclerView.Adapter<UnitRVAdapter.ViewHolder
         holder.unitWeightTv.setText(model.getUnitWeight());
         holder.unitPlaceTv.setText(model.getUnitPlace());
 
-        //holder.entryNameTV.setText(model.getEntryName());
-        //holder.entryLoginNameTV.setText(model.getEntryLoginName());
         //String entryFavourite = model.getEntryFavourite();
         //holder.entryFavouriteTV.setText(entryFavourite);
         /*
@@ -62,7 +60,6 @@ public class UnitRVAdapter extends RecyclerView.Adapter<UnitRVAdapter.ViewHolder
 
          */
         String unitId = model.getUnitId();
-        //holder.entryCategoryTV.setText(model.getEntryCategory());
 
         /*
         // long click means copy the entryPassword
@@ -127,19 +124,7 @@ public class UnitRVAdapter extends RecyclerView.Adapter<UnitRVAdapter.ViewHolder
         unitTagUid2.setText(getIntent().getStringExtra("unitTagUid2"));
         unitTagUid3.setText(getIntent().getStringExtra("unitTagUid3"));
                  */
-                /*
-                Intent i = new Intent(context, UpdateEntryActivity.class);
-                // below we are passing all our values.
-                i.putExtra("entryName", model.getEntryName());
-                i.putExtra("entryLoginName", model.getEntryLoginName());
-                i.putExtra("entryLoginPassword", model.getEntryLoginPassword());
-                i.putExtra("entryCategory", model.getEntryCategory());
-                i.putExtra("entryFavourite", model.getEntryFavourite());
-                i.putExtra("entryId", model.getEntryId());
-                // starting our activity.
-                context.startActivity(i);
 
-                 */
             }
         });
     }
@@ -154,8 +139,6 @@ public class UnitRVAdapter extends RecyclerView.Adapter<UnitRVAdapter.ViewHolder
 
         // creating variables for our text views.
         private TextView unitNumberTv, unitShortContentTv, unitTypeTv, unitWeightTv, unitPlaceTv, unitIdTv;
-        private TextView entryNameTV, entryLoginNameTV, entryFavouriteTV, entryCategoryTV, entryIdTV;
-        private ImageView entryFavouriteIV;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -166,14 +149,6 @@ public class UnitRVAdapter extends RecyclerView.Adapter<UnitRVAdapter.ViewHolder
             unitWeightTv = itemView.findViewById(R.id.tvUnitWeight);
             unitPlaceTv = itemView.findViewById(R.id.tvUnitPlace);
 
-
-            entryNameTV = itemView.findViewById(R.id.idTVEntryName);
-            entryLoginNameTV = itemView.findViewById(R.id.idTVEntryLoginName);
-            entryFavouriteTV = itemView.findViewById(R.id.idTVEntryFavourite);
-            entryFavouriteIV = itemView.findViewById(R.id.idIVEntryFavourite);
-            entryFavouriteIV.setImageResource(R.drawable.ic_baseline_star_outline_24); // default
-            entryCategoryTV = itemView.findViewById(R.id.idTVEntryCategory);
-            entryIdTV = itemView.findViewById(R.id.idTVEntryId);
             // ausgefüllt app:srcCompat="@drawable/ic_baseline_star_rate_24" />
             // leer       app:srcCompat="@drawable/ic_baseline_star_outline_24" />
 

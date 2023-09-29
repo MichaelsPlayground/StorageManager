@@ -114,14 +114,14 @@ public class DBUnitHandler extends SQLiteOpenHelper {
 
         // on below line we are passing all values
         // along with its key and value pair.
-        values.put(UNIT_NUMBER, unitNumber);
+        values.put(UNIT_NUMBER, unitNumber); // idx 01
         values.put(UNIT_SHORT_CONTENT, unitShortContent);
         values.put(UNIT_CONTENT, unitContent);
         values.put(UNIT_TYPE, unitType);
         values.put(UNIT_PLACE, unitPlace);
         values.put(UNIT_ROOM, unitRoom);
         values.put(UNIT_LAST_EDIT, unitLastEdit);
-        values.put(UNIT_ID_SERVER, unitIdServer);
+        values.put(UNIT_ID_SERVER, unitIdServer); // idx 08
         values.put(UNIT_TAG_UID_1, unitTagUid1);
         values.put(UNIT_TAG_UID_2, unitTagUid2);
         values.put(UNIT_TAG_UID_3, unitTagUid3);
@@ -156,14 +156,14 @@ public class DBUnitHandler extends SQLiteOpenHelper {
 
         // on below line we are passing all values
         // along with its key and value pair.
-        values.put(UNIT_NUMBER, unitNumber);
+        values.put(UNIT_NUMBER, unitNumber); // idx 01
         values.put(UNIT_SHORT_CONTENT, unitShortContent);
         values.put(UNIT_CONTENT, unitContent);
         values.put(UNIT_TYPE, unitType);
         values.put(UNIT_PLACE, unitPlace);
         values.put(UNIT_ROOM, unitRoom);
         values.put(UNIT_LAST_EDIT, unitLastEdit);
-        values.put(UNIT_ID_SERVER, unitIdServer);
+        values.put(UNIT_ID_SERVER, unitIdServer); //idx 08
         values.put(UNIT_TAG_UID_1, unitTagUid1);
         values.put(UNIT_TAG_UID_2, unitTagUid2);
         values.put(UNIT_TAG_UID_3, unitTagUid3);
@@ -182,59 +182,8 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void addNewEntry(String entryName, String loginName, String loginPassword, String category, String favourite) {
-        // on below line we are creating a variable for
-        // our sqlite database and calling writable method
-        // as we are writing data in our database.
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // on below line we are creating a
-        // variable for content values.
-        ContentValues values = new ContentValues();
-
-        // on below line we are passing all values
-        // along with its key and value pair.
-        values.put(ENTRY_NAME_COL, entryName);
-        values.put(LOGIN_NAME_COL, loginName);
-        //values.put(LOGIN_PASSWORD_COL, loginPassword); // missing encryption to Base64String
-        values.put(LOGIN_PASSWORD_COL, Cryptography.encryptStringAesGcmToBase64(loginPassword));
-        values.put(CATEGORY_COL, category);
-        values.put(FAVOURITE_COL, favourite);
-        values.put(EXPIRED_COL, false);
-        values.put(RESERVED_COL, "");
-
-        // after adding all values we are passing
-        // content values to our table.
-        db.insert(TABLE_NAME, null, values);
-
-        // at last we are closing our
-        // database after adding database.
-        db.close();
-    }
-
-
-    public void updateEntry(String entryId, String entryName, String loginName, String loginPassword, String category, String favourite) {
-        // calling a method to get writable database.
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues values = new ContentValues();
-
-        // on below line we are passing all values
-        // along with its key and value pair.
-        values.put(ENTRY_NAME_COL, entryName);
-        values.put(LOGIN_NAME_COL, loginName);
-        //values.put(LOGIN_PASSWORD_COL, loginPassword); // missing encryption to Base64String
-        values.put(LOGIN_PASSWORD_COL, Cryptography.encryptStringAesGcmToBase64(loginPassword));
-        values.put(CATEGORY_COL, category);
-        values.put(FAVOURITE_COL, favourite);
-        values.put(EXPIRED_COL, false);
-        values.put(RESERVED_COL, "");
-
-        db.update(TABLE_NAME, values, "id=?", new String[]{entryId});
-        db.close();
-    }
-
     // below is the method for deleting our course.
-    public void deleteAllEntries() {
+    public void deleteAllUnits() {
 
         // on below line we are creating
         // a variable to write our database.
@@ -246,52 +195,61 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void deleteEntry(String entryId) {
+    public void deleteUnit(String unitId) {
         // on below line we are creating
         // a variable to write our database.
         SQLiteDatabase db = this.getWritableDatabase();
         // on below line we are calling a method to delete our
         // course and we are comparing it with our course name.
-        db.delete(TABLE_NAME, "id=?", new String[]{entryId});
+        db.delete(TABLE_NAME, "id=?", new String[]{unitId});
         db.close();
     }
 
-    // we have created a new method for reading all the courses.
-    public ArrayList<EntryModel> readEntries() {
+
+    public ArrayList<StorageUnitModel> readUnits() {
         // on below line we are creating a
         // database for reading our database.
         SQLiteDatabase db = this.getReadableDatabase();
 
         // on below line we are creating a cursor with query to read data from database.
-        Cursor cursorEntries = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+        Cursor cursorUnits = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 
         // on below line we are creating a new array list.
-        ArrayList<EntryModel> entryModelArrayList = new ArrayList<>();
+        ArrayList<StorageUnitModel> unitModelArrayList = new ArrayList<>();
 
         // moving our cursor to first position.
-        if (cursorEntries.moveToFirst()) {
+        if (cursorUnits.moveToFirst()) {
             do {
                 // on below line we are adding the data from cursor to our array list.
-                entryModelArrayList.add(new EntryModel(
-                        cursorEntries.getString(1),
-                        cursorEntries.getString(2),
-                        cursorEntries.getString(3),
-                        cursorEntries.getString(4),
-                        cursorEntries.getString(5),
-                        cursorEntries.getString(6),
-                        //cursorEntries.getString(7)));
-                        cursorEntries.getString(7),
-                        cursorEntries.getString(0))); // 0 = entryId
-            } while (cursorEntries.moveToNext());
+
+                // read data to storageUnitModel
+                unitModelArrayList.add(new StorageUnitModel(
+                        cursorUnits.getString(0), // 0 = unitId
+                        cursorUnits.getString(8), // 08 = unitIdServer
+                        cursorUnits.getString(1),
+                        cursorUnits.getString(2),
+                        cursorUnits.getString(3),
+                        cursorUnits.getString(4),
+                        cursorUnits.getString(5),
+                        cursorUnits.getString(6),
+                        cursorUnits.getString(7),
+                        cursorUnits.getString(9),
+                        cursorUnits.getString(10),
+                        cursorUnits.getString(11),
+                        cursorUnits.getString(12),
+                        cursorUnits.getString(13),
+                        cursorUnits.getString(14),
+                        cursorUnits.getString(15),
+                        cursorUnits.getString(16))); // 0 = unitId
+            } while (cursorUnits.moveToNext());
             // moving our cursor to next.
         }
         // at last closing our cursor
         // and returning our array list.
-        cursorEntries.close();
-        return entryModelArrayList;
+        cursorUnits.close();
+        return unitModelArrayList;
     }
 
-    // we have created a new method for reading all the courses.
     public String getNrDatabaseRecords() {
         SQLiteDatabase db = this.getReadableDatabase();
         long numberOfRows = DatabaseUtils.queryNumEntries(db, TABLE_NAME);

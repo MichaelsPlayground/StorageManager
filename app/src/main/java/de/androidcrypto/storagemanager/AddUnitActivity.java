@@ -26,11 +26,7 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
             unitTagUid1, unitTagUid2, unitTagUid3;
     private Button addUnit, abort;
 
-    private EditText etEntryname, etLoginName, etLoginPassword, etCategory;
-    private CheckBox cbFavourite;
-    private Button btnAddEntry;
-    private DBHandler dbHandler;
-    String entryName, entryLoginName, entryLoginPassword, entryCategory;
+    private DBUnitHandler dbUnitHandler;
 
     @Override
     protected void onResume() {
@@ -39,14 +35,14 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
 
     @Override
     public void lock() {
-        etLoginPassword.setVisibility(View.GONE);
-        etLoginName.setVisibility(View.GONE);
+        //etLoginPassword.setVisibility(View.GONE);
+        //etLoginName.setVisibility(View.GONE);
     }
 
     @Override
     public void unlock() {
-        etLoginPassword.setVisibility(View.VISIBLE);
-        etLoginName.setVisibility(View.VISIBLE);
+        //etLoginPassword.setVisibility(View.VISIBLE);
+        //etLoginName.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -83,28 +79,17 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
         unitPlace.setText("hinten unten links");
         unitRoom.setText("B");
 
-
-// unitName, unitShortContent,
-//            unitContent, unitType, unitWeight, unitPlace, unitRoom, unitLastEdit, unitExternalId,
-//            unitTagUid1, unitTagUid2, unitTagUid3;
         // hide soft keyboard from showing up on startup
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-
-        etEntryname = findViewById(R.id.idEtEntryName);
-        etLoginName = findViewById(R.id.idEtLoginName);
-        etLoginPassword = findViewById(R.id.idEtLoginPassword);
-        etCategory = findViewById(R.id.idEtCategory);
-        cbFavourite = findViewById(R.id.idCbFavourite);
-        btnAddEntry = findViewById(R.id.idBtAddEntry);
-
         // on below line we are initialing our dbhandler class.
-        dbHandler = new DBHandler(AddUnitActivity.this);
+        dbUnitHandler = new DBUnitHandler(AddUnitActivity.this);
 
         // enable on create
-        etLoginPassword.setVisibility(View.VISIBLE);
-        etLoginName.setVisibility(View.VISIBLE);
+        //etLoginPassword.setVisibility(View.VISIBLE);
+        //etLoginName.setVisibility(View.VISIBLE);
 
+        /*
         // on below lines we are getting data which
         // we passed in our adapter class.
         unitNumber.setText(getIntent().getStringExtra("unitNumber"));
@@ -119,12 +104,31 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
         unitTagUid1.setText(getIntent().getStringExtra("unitTagUid1"));
         unitTagUid2.setText(getIntent().getStringExtra("unitTagUid2"));
         unitTagUid3.setText(getIntent().getStringExtra("unitTagUid3"));
+*/
+        addUnit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // todo add sanity checks
 
-        entryName = getIntent().getStringExtra("entryName");
-        entryLoginName = getIntent().getStringExtra("entryLoginName");
-        entryLoginPassword = getIntent().getStringExtra("entryLoginPassword");
-        entryCategory = getIntent().getStringExtra("entryCategory");
+                dbUnitHandler.addNewUnit(unitNumber.getText().toString(),
+                        unitShortContent.getText().toString(),
+                        unitContent.getText().toString(),
+                        unitType.getText().toString(),
+                        unitPlace.getText().toString(),
+                        unitRoom.getText().toString(),
+                        unitLastEdit.getText().toString(),
+                        unitExternalId.getText().toString(),
+                        unitTagUid1.getText().toString(),
+                        unitTagUid2.getText().toString(),
+                        unitTagUid3.getText().toString(),
+                        "", "", "","false");
+                Toast.makeText(AddUnitActivity.this, "Eintrag hinzugefügt..", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(AddUnitActivity.this, MainActivity.class);
+                startActivity(i);
+            }
+        });
 
+        /*
         btnAddEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,6 +170,8 @@ public class AddUnitActivity extends AppCompatActivity implements ILockableActiv
                 }
             }
         });
+
+         */
     }
 
     /**

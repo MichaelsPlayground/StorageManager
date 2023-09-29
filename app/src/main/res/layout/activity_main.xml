@@ -24,7 +24,7 @@
 
     <!--recycler view for displaying our courses-->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/idRVEntries"
+        android:id="@+id/idRVUnits"
         android:paddingTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />

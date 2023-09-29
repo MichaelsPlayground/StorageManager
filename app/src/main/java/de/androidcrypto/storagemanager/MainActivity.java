@@ -53,14 +53,14 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
     String mainKeyAlias; // for the masterKey
     String encryptedPreferencesFilename = "encryptedpreferences.dat";
 
-    FloatingActionButton btnAddEntry;
+    FloatingActionButton btnAddUnit;
 
-    private DBHandler dbHandler;
+    private DBUnitHandler dbUnitHandler;
 
     // recycler view
-    private ArrayList<EntryModel> entryModelArrayList;
-    private EntryRVAdapter entryRVAdapter;
-    private RecyclerView entriesRV;
+    private ArrayList<StorageUnitModel> unitModelArrayList;
+    private UnitRVAdapter unitRVAdapter;
+    private RecyclerView unitsRV;
 
     @Override
     protected void onResume() {
@@ -69,13 +69,13 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
 
     @Override
     public void lock() {
-        RecyclerView recyclerView = findViewById(R.id.idRVEntries);
+        RecyclerView recyclerView = findViewById(R.id.idRVUnits);
         recyclerView.setVisibility(View.GONE);
     }
 
     @Override
     public void unlock() {
-        RecyclerView recyclerView = findViewById(R.id.idRVEntries);
+        RecyclerView recyclerView = findViewById(R.id.idRVUnits);
         recyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -99,38 +99,38 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
 
         // creating a new dbhandler class
         // and passing our context to it.
-        dbHandler = new DBHandler(MainActivity.this);
+        dbUnitHandler = new DBUnitHandler(MainActivity.this);
 
         // activate on creation
-        RecyclerView recyclerView = findViewById(R.id.idRVEntries);
+        RecyclerView recyclerView = findViewById(R.id.idRVUnits);
         recyclerView.setVisibility(View.VISIBLE);
 
-        entryModelArrayList = new ArrayList<>();
+        unitModelArrayList = new ArrayList<>();
 
         // list from db handler class.
-        entryModelArrayList = dbHandler.readEntries();
+        unitModelArrayList = dbUnitHandler.readUnits();
 
         // here we are filtering in entryName
         String filterString = "";
-        ArrayList<EntryModel> entryModelFilteredArrayList = new ArrayList<>();
-        for (int l = 0; l < entryModelArrayList.size(); l++) {
-            String serviceName = entryModelArrayList.get(l).getEntryName().toLowerCase();
+        ArrayList<StorageUnitModel> unitModelFilteredArrayList = new ArrayList<>();
+        for (int l = 0; l < unitModelArrayList.size(); l++) {
+            String serviceName = unitModelArrayList.get(l).getUnitNumber().toLowerCase();
             if (serviceName.contains(filterString.toLowerCase())) {
-                entryModelFilteredArrayList.add(entryModelArrayList.get(l));
+                unitModelFilteredArrayList.add(unitModelArrayList.get(l));
             }
         }
-        entryRVAdapter = new EntryRVAdapter(entryModelFilteredArrayList, de.androidcrypto.storagemanager.MainActivity.this);
-        entriesRV = findViewById(R.id.idRVEntries);
+        unitRVAdapter = new UnitRVAdapter(unitModelFilteredArrayList, de.androidcrypto.storagemanager.MainActivity.this);
+        unitsRV = findViewById(R.id.idRVUnits);
 
         // setting layout manager for our recycler view.
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(de.androidcrypto.storagemanager.MainActivity.this, RecyclerView.VERTICAL, false);
-        entriesRV.setLayoutManager(linearLayoutManager);
+        unitsRV.setLayoutManager(linearLayoutManager);
 
         // setting our adapter to recycler view.
-        entriesRV.setAdapter(entryRVAdapter);
+        unitsRV.setAdapter(unitRVAdapter);
 
-        btnAddEntry = (FloatingActionButton) findViewById(R.id.fabAddUnit);
-        btnAddEntry.setOnClickListener(new View.OnClickListener() {
+        btnAddUnit = (FloatingActionButton) findViewById(R.id.fabAddUnit);
+        btnAddUnit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(MainActivity.this, AddUnitActivity.class);
@@ -167,25 +167,25 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
                 //adapter.getFilter().filter(newText);
                 // hier wird gefiltered
                 String filterString = newText; // in courseDuration
-                ArrayList<EntryModel> entryModelFilteredArrayList = new ArrayList<>();
-                for (int l = 0; l < entryModelArrayList.size(); l++) {
-                    String serviceName = entryModelArrayList.get(l).getEntryName().toLowerCase();
+                ArrayList<StorageUnitModel> unitModelFilteredArrayList = new ArrayList<>();
+                for (int l = 0; l < unitModelArrayList.size(); l++) {
+                    String serviceName = unitModelArrayList.get(l).getUnitNumber().toLowerCase();
 
                     if (serviceName.contains(filterString.toLowerCase())) {
-                        entryModelFilteredArrayList.add(entryModelArrayList.get(l));
+                        unitModelFilteredArrayList.add(unitModelArrayList.get(l));
                     }
 
                     // original: courseRVAdapter = new CourseRVAdapter(courseModalArrayList, de.androidcrypto.sqllitetutorial1.ViewFilteredCourses.this);
-                    entryRVAdapter = new EntryRVAdapter(entryModelFilteredArrayList, de.androidcrypto.storagemanager.MainActivity.this);
+                    unitRVAdapter = new UnitRVAdapter(unitModelFilteredArrayList, de.androidcrypto.storagemanager.MainActivity.this);
 
-                    entriesRV = findViewById(R.id.idRVEntries);
+                    unitsRV = findViewById(R.id.idRVUnits);
 
                     // setting layout manager for our recycler view.
                     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(de.androidcrypto.storagemanager.MainActivity.this, RecyclerView.VERTICAL, false);
-                    entriesRV.setLayoutManager(linearLayoutManager);
+                    unitsRV.setLayoutManager(linearLayoutManager);
 
                     // setting our adapter to recycler view.
-                    entriesRV.setAdapter(entryRVAdapter);
+                    unitsRV.setAdapter(unitRVAdapter);
 
                 }
                 onPrepareOptionsMenu(menu); // zeigt die app-bar wieder vollständig an
@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
                 alertDialog.setPositiveButton("löschen", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        dbHandler.deleteAllEntries();
+                        dbUnitHandler.deleteAllUnits();
                         Intent i = new Intent(MainActivity.this, MainActivity.class);
                         startActivity(i);
                     }

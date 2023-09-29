@@ -50,6 +50,29 @@ public class StorageUnitModel {
         this.unitNumber = unitNumber;
     }
 
+    // constructor for reading all units
+
+
+    public StorageUnitModel(String unitId, String unitIdServer, String unitNumber, String unitShortContent, String unitContent, String unitType, String unitWeight, String unitPlace, String unitRoomNr, String unitLastEdit, String unitTagUid1, String unitTagUid2, String unitTagUid3, String unitImageFilename1, String unitImageFilename2, String unitImageFilename3, String unitDeleted) {
+        this.unitId = unitId;
+        this.unitIdServer = unitIdServer;
+        this.unitNumber = unitNumber;
+        this.unitShortContent = unitShortContent;
+        this.unitContent = unitContent;
+        this.unitType = unitType;
+        this.unitWeight = unitWeight;
+        this.unitPlace = unitPlace;
+        this.unitRoomNr = unitRoomNr;
+        this.unitLastEdit = unitLastEdit;
+        this.unitTagUid1 = unitTagUid1;
+        this.unitTagUid2 = unitTagUid2;
+        this.unitTagUid3 = unitTagUid3;
+        this.unitImageFilename1 = unitImageFilename1;
+        this.unitImageFilename2 = unitImageFilename2;
+        this.unitImageFilename3 = unitImageFilename3;
+        this.unitDeleted = unitDeleted;
+    }
+
     public String getUnitId() {
         return unitId;
     }
