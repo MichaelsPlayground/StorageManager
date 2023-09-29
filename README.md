@@ -92,7 +92,9 @@ JGhHjZA43ARhWG/3eqn14e/sb/6s6TrxTPbScDIGrvU=:aL9C4WH32nUN9uUQ:aMrv8RJvG7NkpTeOd5
 ### PWMANAGER MASTERKEY END V1 ###
 ```
 
+Icon background color: 3DCFDC
 
+Icon size: 44%
 
 
 

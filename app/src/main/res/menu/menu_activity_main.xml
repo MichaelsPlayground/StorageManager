@@ -19,6 +19,18 @@
         app:showAsAction="ifRoom|withText"/>
 
     <item
+        android:id="@+id/action_add_unit"
+        android:icon="@drawable/ic_baseline_add_circle_outline_24"
+        android:title="@string/addUnit"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_update_unit"
+        android:icon="@drawable/ic_baseline_add_circle_outline_24"
+        android:title="update unit"
+        app:showAsAction="never"/>
+
+    <item
         android:id="@+id/action_add"
         android:icon="@drawable/ic_baseline_add_circle_outline_24"
         android:title="@string/addEntry"
