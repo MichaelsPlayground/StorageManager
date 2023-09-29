@@ -37,6 +37,7 @@ public class TakePhotoActivity extends AppCompatActivity {
                 Log.d(TAG, "selected unit number: " + selectedUnitNumber);
                 // take a photo, crop it and store it
 
+                // radio group for selecting image 1 / 2 / 3
 
             }
         });
