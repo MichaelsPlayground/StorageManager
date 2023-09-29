@@ -21,8 +21,9 @@
     <string name="license_appicon">Lizenztext</string>
     <string name="nodata">keine Daten</string>
     <string name="appPurpose">Übersicht</string>
-    <string name="appPurposeText">Die App speichert organisiert die Lagerung von Kartons und Gegenständen in einer LagerBox.</string>
+    <string name="appPurposeText">Die App organisiert die Lagerung von Kartons und Gegenständen in einer LagerBox.</string>
     <string name="nrDatabaseEntries">Anzahl\nDatensätze</string>
     <string name="databaseSize">Datenbank\nGröße</string>
     <string name="addUnit">unit hinzufügen</string>
+    <string name="warning_database_import">Warning: the import does not check any duplicate datasets. Run this task if you know what your doing ONLY !</string>
 </resources>

@@ -43,12 +43,6 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_importFile"
-        android:icon="@drawable/ic_baseline_playlist_add_24"
-        android:title="Datei importieren"
-        app:showAsAction="never"/>
-
-    <item
         android:id="@+id/action_deleteAllEntries"
         android:icon="@drawable/ic_baseline_delete_outline_24"
         android:title="Datenbank löschen"
@@ -64,6 +58,12 @@
         android:id="@+id/action_exportDatabase"
         android:icon="@drawable/ic_baseline_help_outline_24"
         android:title="Export Database"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_importDatabase"
+        android:icon="@drawable/ic_baseline_playlist_add_24"
+        android:title="Import Database"
         app:showAsAction="never"/>
 
     <item

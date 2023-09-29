@@ -245,15 +245,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
                 return false;
             }
         });
-        MenuItem mImportFile = menu.findItem(R.id.action_importFile);
-        mImportFile.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, DatabaseImportFile.class);
-                startActivity(i);
-                return false;
-            }
-        });
+
         MenuItem mExportMasterkey = menu.findItem(R.id.action_exportMasterkey);
         mExportMasterkey.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
@@ -269,6 +261,16 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Intent i = new Intent(MainActivity.this, DatabaseExportFile.class);
+                startActivity(i);
+                return false;
+            }
+        });
+
+        MenuItem mImportDatabase = menu.findItem(R.id.action_importDatabase);
+        mImportDatabase.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent i = new Intent(MainActivity.this, DatabaseImportFile.class);
                 startActivity(i);
                 return false;
             }

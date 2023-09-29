@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class DBUnitHandler extends SQLiteOpenHelper {
+    private static final String TAG = DBUnitHandler.class.getSimpleName();
 
     // creating a constant variables for our database.
     // below variable is for our database name.
@@ -139,6 +141,7 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         // at last we are closing our
         // database after adding database.
         db.close();
+        Log.d(TAG, "database entry added");
     }
 
     public void updateUnit(String unitId, String unitIdServer, String unitNumber, String unitShortContent,
@@ -187,6 +190,7 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         // at last we are closing our
         // database after adding database.
         db.close();
+        Log.d(TAG, "database entry updated for id " + unitId);
     }
 
     // below is the method for deleting our course.

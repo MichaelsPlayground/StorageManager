@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -71,7 +73,7 @@ public class DatabaseExportFile extends AppCompatActivity {
                     Toast.makeText(DatabaseExportFile.this, "No units in database", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                //StorageUnitsModel unitsList = new StorageUnitsModel(units);
                 gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
                 allJsonResponse = convertClassToJson(units);
                 exportFileName = DEFAULT_JSON_FILE_NAME + Utils.getExportTimestamp() + DEFAULT_JSON_FILE_EXTENSION;
@@ -128,16 +130,30 @@ public class DatabaseExportFile extends AppCompatActivity {
         }
     }
 
-    private String convertClassToJson(List<StorageUnitModel> unitModels) {
-        return gson.toJson(unitModels);
+    private String convertClassToJson(List<StorageUnitModel> unitList) {
+        return gson.toJson(unitList, StorageUnitModelList.class);
+    }
+
+    /**
+     * section for options menu
+     */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_return_home, menu);
+
+        MenuItem mGoToHome = menu.findItem(R.id.action_return_main);
+        mGoToHome.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent = new Intent(DatabaseExportFile.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
 }
-
-/* 1234
-### PWMANAGER IMPORT START V1 ###
-6UxaFrzwa9HFQjKFkVER8rO7tyi8oL+J7G7TZf1Gga0=:usGMWKw53or2oCi/:cyanlpATwHrEJO1XgeBw/1VAxzfhbTnqFuhSkQmyyaO8PIIWqbWOxurIZyHdiEi5YsUHZh7EfKsIgQlZ6aTC4qOvDgIWaMX9eaR61wIyjtcACZkrJy/ncIgvnF6wzANMLY4WD49w0fQmbUSGFGxrOH7CnmVkxm8MqZfBRX2SloetwuDT+c+llruMwPmkv+LCkrDkEV3iHNiyKWiOmRQ3uOO51oxHhn8jqxysP9nAqMfIdtr2b1nLqvBEU36J0vbFlWMZxg3aeQv5LxJrKuvIYytiCyaGa0Fq2UQ7uerLagM2iPesQuaRrm38oXGfXjnfj+RJJvAwSSMX/58M8/z997X9iIeCUAeM:IjNXIHH3+xryB+TycdOvbQ==
-### PWMANAGER IMPORT END V1 ###
-*/
-/*
- */
