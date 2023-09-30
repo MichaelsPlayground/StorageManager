@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
@@ -32,11 +33,14 @@ import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -61,6 +65,8 @@ public class TakePhotoActivity extends AppCompatActivity {
 
     // take and crop images
     private Button takePhoto, cropImageDefault, cropImageChose, useUncroppedImage;
+    private ImageButton imageRotateRight, imageRotateLeft;
+    private Button saveUncroppedImage, saveCroppedImage;
     private ImageView ivFull, ivCrop;
     private TextView tvFull, tvCrop;
     private final String FIXED_IMAGE_EXTENSION = ".jpg";
@@ -78,7 +84,8 @@ public class TakePhotoActivity extends AppCompatActivity {
     private ActivityResultLauncher<Intent> cropActivityResultLauncher;
 
     private Uri imageUriFull, imageUriCrop;
-    private boolean useFixedCropper = false;
+    private int imageOrientation;
+    private boolean useFixedCropper = true;
 
 
     @Override
@@ -86,10 +93,18 @@ public class TakePhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        setSupportActionBar(toolbar);
+
         takePhoto = findViewById(R.id.btnTakePhoto);
+        imageRotateRight = findViewById(R.id.ibtnRotateRight);
+        imageRotateLeft = findViewById(R.id.ibtnRotateLeft);
         cropImageDefault = findViewById(R.id.btnCropImageDefault);
         cropImageChose = findViewById(R.id.btnCropImageChose);
         useUncroppedImage = findViewById(R.id.btnUseUncroppedImage);
+
+        saveUncroppedImage = findViewById(R.id.btnSaveUncroppedImage);
+        saveCroppedImage = findViewById(R.id.btnSaveCroppedImage);
 
         ivFull = findViewById(R.id.ivFull);
         ivCrop = findViewById(R.id.ivCrop);
@@ -125,7 +140,63 @@ public class TakePhotoActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "takePhoto");
+
+                // todo checks is unit number selected
+
                 onLaunchCamera();
+            }
+        });
+
+        imageRotateRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "imageRotateRight");
+
+                // todo checks is unit number selected and image available
+                onImageRotateRight();
+            }
+        });
+
+        imageRotateLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "imageRotateLeft");
+
+                // todo checks is unit number selected and image available
+                onImageRotateLeft();
+            }
+        });
+
+        cropImageChose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "cropImageChose");
+
+                // todo checks is unit number selected and image available
+
+                onCropImage();
+            }
+        });
+
+        saveUncroppedImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "saveUncroppedImage");
+
+                // todo checks is unit number selected and image available
+
+                onSaveUncroppedImage();
+            }
+        });
+
+        saveCroppedImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "saveCroppedImage");
+
+                // todo checks is unit number selected and image available
+
+                onSaveXCroppedImage();
             }
         });
 
@@ -167,7 +238,8 @@ public class TakePhotoActivity extends AppCompatActivity {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         imageUriFull = intermediateProvider;
                         Bitmap inputImage = loadFromUri(intermediateProvider);
-                        Bitmap rotated = rotateBitmap(getResizedBitmap(inputImage, 800), getCameraOrientation());
+                        imageOrientation = getCameraOrientation();
+                        Bitmap rotated = rotateBitmap(getResizedBitmap(inputImage, 800),imageOrientation );
                         ivFull.setImageBitmap(rotated);
                         String imageInfo = "Bitmap height: " + inputImage.getHeight() + " width: " + inputImage.getWidth() +
                                 " res: " + (inputImage.getHeight() * inputImage.getWidth());
@@ -202,6 +274,30 @@ public class TakePhotoActivity extends AppCompatActivity {
         if (intent.resolveActivity(getPackageManager()) != null) {
             cameraActivityResultLauncher.launch(intent);
         }
+    }
+
+    private void onImageRotateRight() {
+        Bitmap inputImage = loadFromUri(imageUriFull);
+        imageOrientation+= 90;
+        if (imageOrientation > 359) imageOrientation = 0;
+        Bitmap rotated = rotateBitmap(getResizedBitmap(inputImage, 800), imageOrientation);
+        ivFull.setImageBitmap(rotated);
+        String imageInfo = "Bitmap height: " + inputImage.getHeight() + " width: " + inputImage.getWidth() +
+                " res: " + (inputImage.getHeight() * inputImage.getWidth());
+        tvFull.setText(imageInfo);
+        saveBitmapFileToIntermediate(inputImage);
+    }
+
+    private void onImageRotateLeft() {
+        Bitmap inputImage = loadFromUri(imageUriFull);
+        imageOrientation-= 90;
+        if (imageOrientation <0) imageOrientation = 270;
+        Bitmap rotated = rotateBitmap(getResizedBitmap(inputImage, 800), imageOrientation);
+        ivFull.setImageBitmap(rotated);
+        String imageInfo = "Bitmap height: " + inputImage.getHeight() + " width: " + inputImage.getWidth() +
+                " res: " + (inputImage.getHeight() * inputImage.getWidth());
+        tvFull.setText(imageInfo);
+        saveBitmapFileToIntermediate(inputImage);
     }
 
     private void onCropImage() {
@@ -270,6 +366,31 @@ public class TakePhotoActivity extends AppCompatActivity {
             intentCrop.putExtra(MediaStore.EXTRA_OUTPUT, resultProvider);
             cropActivityResultLauncher.launch(intentCrop);
         }
+    }
+
+    private void onSaveUncroppedImage() {
+
+        String filename = "b1234.jpg";
+        String subfolder = "original";
+        Bitmap bitmap = uriToBitmap(imageUriFull);
+        //boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, filename);
+        boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, subfolder, filename);
+
+        subfolder = "thumbnail";
+        int maxThumbnailSize = 100;
+        success = saveImageToInternalStorage(getApplicationContext(), getResizedBitmap(bitmap, maxThumbnailSize), subfolder, filename);
+
+        Log.d(TAG, "saveImageToInternalStorage: " + success);
+    }
+
+    private void onSaveXCroppedImage() {
+
+        String filename = "b123cr.jpg";
+        String subfolder = "thumbnail";
+        Bitmap bitmap = uriToBitmap(imageUriCrop);
+        //boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, filename);
+        boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, subfolder, filename);
+        Log.d(TAG, "saveImageToInternalStorage: " + success);
     }
 
     private void onSaveFullImage() {
@@ -548,6 +669,37 @@ This key is available on all devices.
         return null;
     }
 
+    public boolean saveImageToInternalStorage(Context context, Bitmap b, String imageName) {
+        FileOutputStream foStream;
+        try {
+            foStream = context.openFileOutput(imageName, Context.MODE_PRIVATE);
+            b.compress(Bitmap.CompressFormat.JPEG, 100, foStream);
+            foStream.close();
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception : " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean saveImageToInternalStorage(Context context, Bitmap b, String subfolder,  String imageName) {
+        File dir=new File(getFilesDir(), subfolder);
+        dir.mkdirs();
+        FileOutputStream foStream;
+        try {
+            foStream = new FileOutputStream(new File(dir, imageName));
+            //foStream = context.openFileOutput(imageName, Context.MODE_PRIVATE);
+            b.compress(Bitmap.CompressFormat.JPEG, 100, foStream);
+            foStream.close();
+            return true;
+        } catch (Exception e) {
+            Log.e(TAG, "Exception : " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     /**
      * UI handling
      */
@@ -586,6 +738,28 @@ This key is available on all devices.
                 }
             }
         }
+    }
+
+    /**
+     * section for options menu
+     */
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_return_home, menu);
+
+        MenuItem mGoToHome = menu.findItem(R.id.action_return_main);
+        mGoToHome.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Intent intent = new Intent(TakePhotoActivity.this, MainActivity.class);
+                startActivity(intent);
+                finish();
+                return false;
+            }
+        });
+
+        return super.onCreateOptionsMenu(menu);
     }
 
 }
