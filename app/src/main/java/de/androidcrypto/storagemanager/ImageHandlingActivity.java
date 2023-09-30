@@ -56,8 +56,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-public class TakePhotoActivity extends AppCompatActivity {
-    private static final String TAG = TakePhotoActivity.class.getSimpleName();
+public class ImageHandlingActivity extends AppCompatActivity {
+    private static final String TAG = ImageHandlingActivity.class.getSimpleName();
     private AutoCompleteTextView chooseUnitNumber;
     private String selectedUnitNumber;
     private DBUnitHandler dbUnitHandler;
@@ -122,7 +122,7 @@ public class TakePhotoActivity extends AppCompatActivity {
         //checkForImageCropper();
         askPermissions();
 
-        dbUnitHandler = new DBUnitHandler(TakePhotoActivity.this);
+        dbUnitHandler = new DBUnitHandler(ImageHandlingActivity.this);
         selectedUnitNumber = "";
 
         chooseUnitNumber = findViewById(R.id.chooseUnitNumber);
@@ -288,7 +288,7 @@ public class TakePhotoActivity extends AppCompatActivity {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File photoFile = getPhotoFileUri(intermediateName);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            intermediateProvider = FileProvider.getUriForFile(TakePhotoActivity.this, FILE_PROVIDER_AUTHORITY + ".provider", photoFile);
+            intermediateProvider = FileProvider.getUriForFile(ImageHandlingActivity.this, FILE_PROVIDER_AUTHORITY + ".provider", photoFile);
         else
             intermediateProvider = Uri.fromFile(photoFile);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, intermediateProvider);
@@ -357,7 +357,7 @@ public class TakePhotoActivity extends AppCompatActivity {
                 // wrap File object into a content provider
                 // required for API >= 24
                 // See https://guides.codepath.com/android/Sharing-Content-with-Intents#sharing-files-with-api-24-or-higher
-                resultProvider = FileProvider.getUriForFile(TakePhotoActivity.this, FILE_PROVIDER_AUTHORITY + ".provider", photoFile);
+                resultProvider = FileProvider.getUriForFile(ImageHandlingActivity.this, FILE_PROVIDER_AUTHORITY + ".provider", photoFile);
                 intent.putExtra("return-data", false);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, resultProvider);
                 intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
@@ -566,7 +566,7 @@ This key is available on all devices.
             Bitmap bitmap = loadFromUri(sourceUri);
             File imageFile = getPhotoFileUri(intermediateName);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                intermediateProvider = FileProvider.getUriForFile(TakePhotoActivity.this, FILE_PROVIDER_AUTHORITY + ".provider", imageFile);
+                intermediateProvider = FileProvider.getUriForFile(ImageHandlingActivity.this, FILE_PROVIDER_AUTHORITY + ".provider", imageFile);
             else
                 intermediateProvider = Uri.fromFile(imageFile);
 
@@ -584,7 +584,7 @@ This key is available on all devices.
         try {
             File imageFile = getPhotoFileUri(intermediateName);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                intermediateProvider = FileProvider.getUriForFile(TakePhotoActivity.this, FILE_PROVIDER_AUTHORITY + ".provider", imageFile);
+                intermediateProvider = FileProvider.getUriForFile(ImageHandlingActivity.this, FILE_PROVIDER_AUTHORITY + ".provider", imageFile);
             else
                 intermediateProvider = Uri.fromFile(imageFile);
             OutputStream out = new FileOutputStream(imageFile);
@@ -672,7 +672,7 @@ This key is available on all devices.
 
     // update the gallery index
     private void scanFile(String path) {
-        MediaScannerConnection.scanFile(TakePhotoActivity.this,
+        MediaScannerConnection.scanFile(ImageHandlingActivity.this,
                 new String[] { path }, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
 
@@ -798,7 +798,7 @@ This key is available on all devices.
         mGoToHome.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent intent = new Intent(TakePhotoActivity.this, MainActivity.class);
+                Intent intent = new Intent(ImageHandlingActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
                 return false;

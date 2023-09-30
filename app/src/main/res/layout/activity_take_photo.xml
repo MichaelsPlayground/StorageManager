@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:isScrollContainer="true"
     android:orientation="vertical"
-    tools:context=".TakePhotoActivity">
+    tools:context=".ImageHandlingActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_main"

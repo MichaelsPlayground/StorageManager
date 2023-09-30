@@ -28,7 +28,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StorageManager">
         <activity
-            android:name=".TakePhotoActivity"
+            android:name=".ImageHandlingActivity"
             android:exported="false" />
         <!-- <activity android:name=".AuthenticateActivity"> -->
         <activity

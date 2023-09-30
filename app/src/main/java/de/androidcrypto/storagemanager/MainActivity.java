@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mTakePhoto.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, TakePhotoActivity.class);
+                Intent i = new Intent(MainActivity.this, ImageHandlingActivity.class);
                 startActivity(i);
                 return false;
             }
