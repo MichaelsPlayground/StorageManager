@@ -64,12 +64,16 @@ public class TakePhotoActivity extends AppCompatActivity {
 
 
     // take and crop images
-    private Button takePhoto, cropImageDefault, cropImageChose, useUncroppedImage;
+    private Button takePhoto, browseGallery, cropImageDefault, cropImageChose, useUncroppedImage;
     private ImageButton imageRotateRight, imageRotateLeft;
     private Button saveUncroppedImage, saveCroppedImage;
+    private RadioButton rbUseAsImage1, rbUseAsImage2, rbUseAsImage3;
     private ImageView ivFull, ivCrop;
     private TextView tvFull, tvCrop;
     private final String FIXED_IMAGE_EXTENSION = ".jpg";
+    private String IMAGE_FILE_NAME;
+    private final String IMAGE_FOLDER_FULL_RESOLUTION = "original";
+    private final String IMAGE_FOLDER_THUMBNAIL = "thumbnail";
 
     private final String CACHE_FOLDER = "crop";
     private String intermediateName = "1.jpg";
@@ -97,6 +101,7 @@ public class TakePhotoActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         takePhoto = findViewById(R.id.btnTakePhoto);
+        browseGallery = findViewById(R.id.btnBrowseGallery);
         imageRotateRight = findViewById(R.id.ibtnRotateRight);
         imageRotateLeft = findViewById(R.id.ibtnRotateLeft);
         cropImageDefault = findViewById(R.id.btnCropImageDefault);
@@ -105,6 +110,9 @@ public class TakePhotoActivity extends AppCompatActivity {
 
         saveUncroppedImage = findViewById(R.id.btnSaveUncroppedImage);
         saveCroppedImage = findViewById(R.id.btnSaveCroppedImage);
+        rbUseAsImage1 = findViewById(R.id.rbImage1);
+        rbUseAsImage2 = findViewById(R.id.rbImage2);
+        rbUseAsImage3 = findViewById(R.id.rbImage3);
 
         ivFull = findViewById(R.id.ivFull);
         ivCrop = findViewById(R.id.ivCrop);
@@ -144,6 +152,18 @@ public class TakePhotoActivity extends AppCompatActivity {
                 // todo checks is unit number selected
 
                 onLaunchCamera();
+            }
+        });
+
+        browseGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "browseGallery");
+
+                // todo checks is unit number selected
+
+                onBrowseGallery();
+
             }
         });
 
@@ -216,7 +236,8 @@ public class TakePhotoActivity extends AppCompatActivity {
                         saveBitmapFileToIntermediate(imageUriFull);
 
                         Bitmap inputImage = loadFromUri(intermediateProvider);
-                        Bitmap rotated = rotateBitmap(getResizedBitmap(inputImage, 800), imageUriFull);
+                        //Bitmap rotated = rotateBitmap(getResizedBitmap(inputImage, 800), imageUriFull);
+                        Bitmap rotated = getResizedBitmap(inputImage, 800);
                         ivFull.setImageBitmap(rotated);
 
                         int height = ivFull.getHeight();
@@ -274,6 +295,16 @@ public class TakePhotoActivity extends AppCompatActivity {
         if (intent.resolveActivity(getPackageManager()) != null) {
             cameraActivityResultLauncher.launch(intent);
         }
+    }
+
+    public void onBrowseGallery() {
+
+        // Launch the photo picker and let the user choose only images.
+        https://developer.android.com/training/data-storage/shared/photopicker
+        pickMediaActivityResultLauncher.launch(new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build());
+
     }
 
     private void onImageRotateRight() {
@@ -370,15 +401,15 @@ public class TakePhotoActivity extends AppCompatActivity {
 
     private void onSaveUncroppedImage() {
 
-        String filename = "b1234.jpg";
-        String subfolder = "original";
+        //String filename = "b1234.jpg";
+        //String subfolder = "original";
+        generateImageFilename();
         Bitmap bitmap = uriToBitmap(imageUriFull);
         //boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, filename);
-        boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, subfolder, filename);
+        boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, IMAGE_FOLDER_FULL_RESOLUTION, IMAGE_FILE_NAME);
 
-        subfolder = "thumbnail";
         int maxThumbnailSize = 100;
-        success = saveImageToInternalStorage(getApplicationContext(), getResizedBitmap(bitmap, maxThumbnailSize), subfolder, filename);
+        success = saveImageToInternalStorage(getApplicationContext(), getResizedBitmap(bitmap, maxThumbnailSize), IMAGE_FOLDER_THUMBNAIL, IMAGE_FILE_NAME);
 
         Log.d(TAG, "saveImageToInternalStorage: " + success);
     }
@@ -411,6 +442,18 @@ public class TakePhotoActivity extends AppCompatActivity {
         }
     }
 
+    // generate the filename
+    private void generateImageFilename() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(selectedUnitNumber.toLowerCase());
+        sb.append("_");
+        if (rbUseAsImage1.isChecked()) sb.append("1");
+        if (rbUseAsImage2.isChecked()) sb.append("2");
+        if (rbUseAsImage3.isChecked()) sb.append("3");
+        sb.append(FIXED_IMAGE_EXTENSION);
+        IMAGE_FILE_NAME = sb.toString();
+    }
+
     private void onSaveCroppedImage() {
         String toastMessage;
         if ((imageUriCrop == null) || (TextUtils.isEmpty(imageUriCrop.toString()))) {
@@ -441,6 +484,9 @@ public class TakePhotoActivity extends AppCompatActivity {
         Matrix rotationMatrix = new Matrix();
         rotationMatrix.setRotate(orientation);
         Bitmap cropped = Bitmap.createBitmap(input, 0, 0, input.getWidth(), input.getHeight(), rotationMatrix, true);
+        if (cur != null) {
+            cur.close();
+        }
         return cropped;
     }
 
