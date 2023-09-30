@@ -2,19 +2,27 @@ package de.androidcrypto.storagemanager;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.ImageDecoder;
+import android.graphics.Matrix;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -78,6 +86,11 @@ public class TakePhotoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_photo);
 
+        takePhoto = findViewById(R.id.btnTakePhoto);
+        cropImageDefault = findViewById(R.id.btnCropImageDefault);
+        cropImageChose = findViewById(R.id.btnCropImageChose);
+        useUncroppedImage = findViewById(R.id.btnUseUncroppedImage);
+
         ivFull = findViewById(R.id.ivFull);
         ivCrop = findViewById(R.id.ivCrop);
         tvFull = findViewById(R.id.tvFull);
@@ -108,7 +121,73 @@ public class TakePhotoActivity extends AppCompatActivity {
             }
         });
 
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "takePhoto");
+                onLaunchCamera();
+            }
+        });
 
+/**
+ * section for ActivityResultLauncher
+ */
+
+        // android 13 photo picker
+        // Registers a photo picker activity launcher in single-select mode.
+        // https://developer.android.com/training/data-storage/shared/photopicker
+        pickMediaActivityResultLauncher =
+                registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
+                    // Callback is invoked after the user selects a media item or closes the
+                    // photo picker.
+                    if (uri != null) {
+                        imageUriFull = uri;
+                        saveBitmapFileToIntermediate(imageUriFull);
+
+                        Bitmap inputImage = loadFromUri(intermediateProvider);
+                        Bitmap rotated = rotateBitmap(getResizedBitmap(inputImage, 800), imageUriFull);
+                        ivFull.setImageBitmap(rotated);
+
+                        int height = ivFull.getHeight();
+                        int width = ivFull.getWidth();
+
+                        //Bitmap inputImage = uriToBitmap(imageUriFull);
+                        String imageInfo = "height: " + height + " width: " + width + " resolution: " + (height * width) +
+                                "\nOriginal Bitmap height: " + inputImage.getHeight() + " width: " + inputImage.getWidth() +
+                                " res: " + (inputImage.getHeight() * inputImage.getWidth());
+                        tvFull.setText(imageInfo);
+                    } else {
+                        Log.d(TAG, "No media selected");
+                    }
+                });
+
+        cameraActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        imageUriFull = intermediateProvider;
+                        Bitmap inputImage = loadFromUri(intermediateProvider);
+                        Bitmap rotated = rotateBitmap(getResizedBitmap(inputImage, 800), getCameraOrientation());
+                        ivFull.setImageBitmap(rotated);
+                        String imageInfo = "Bitmap height: " + inputImage.getHeight() + " width: " + inputImage.getWidth() +
+                                " res: " + (inputImage.getHeight() * inputImage.getWidth());
+                        tvFull.setText(imageInfo);
+                        saveBitmapFileToIntermediate(inputImage);
+                    }
+                });
+
+        cropActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        imageUriCrop = resultProvider;
+                        Bitmap cropImage = loadFromUri(resultProvider);
+                        ivCrop.setImageBitmap(getResizedBitmap(cropImage, 800));
+                        String imageInfo = "Cropped Bitmap height: " + cropImage.getHeight() + " width: " + cropImage.getWidth() +
+                                " res: " + (cropImage.getHeight() * cropImage.getWidth());
+                        tvCrop.setText(imageInfo);
+                    }
+                });
 
     }
 
@@ -228,6 +307,62 @@ public class TakePhotoActivity extends AppCompatActivity {
             writeToUiToast(toastMessage);
         }
     }
+
+    @SuppressLint("Range")
+    public Bitmap rotateBitmap(Bitmap input, Uri uri) {
+        Log.d(TAG, "rotateBitmap");
+        String[] orientationColumn = {MediaStore.Images.Media.ORIENTATION};
+        Cursor cur = getContentResolver().query(uri, orientationColumn, null, null, null);
+        int orientation = -1;
+        if (cur != null && cur.moveToFirst()) {
+            orientation = cur.getInt(cur.getColumnIndex(orientationColumn[0]));
+        }
+        Matrix rotationMatrix = new Matrix();
+        rotationMatrix.setRotate(orientation);
+        Bitmap cropped = Bitmap.createBitmap(input, 0, 0, input.getWidth(), input.getHeight(), rotationMatrix, true);
+        return cropped;
+    }
+
+    /*
+https://stackoverflow.com/a/38647301/8166854
+You can just read the orientation of the camera sensor like indicated by Google in the documentation:
+https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics.html
+
+SENSOR_ORIENTATION
+
+Added in API level 21
+Key<Integer> SENSOR_ORIENTATION
+Clockwise angle through which the output image needs to be rotated to be upright on the device screen in its native orientation.
+
+Also defines the direction of rolling shutter readout, which is from top to bottom in the sensor's coordinate system.
+
+Units: Degrees of clockwise rotation; always a multiple of 90
+
+Range of valid values:
+0, 90, 180, 270
+
+This key is available on all devices.
+     */
+    public Bitmap rotateBitmap(Bitmap input, int orientation) {
+        Log.d(TAG, "rotateBitmap");
+        Matrix rotationMatrix = new Matrix();
+        rotationMatrix.setRotate(orientation);
+        return Bitmap.createBitmap(input, 0, 0, input.getWidth(), input.getHeight(), rotationMatrix, true);
+    }
+
+    private int getCameraOrientation() {
+        CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
+        int orientation = 0;
+        try {
+            String cameraId = manager.getCameraIdList()[0];
+            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+            orientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception: " + e.getMessage());
+        }
+        return orientation;
+    }
+
 
     // Returns the File for a photo stored on disk given the fileName
     public File getPhotoFileUri(String fileName) {
