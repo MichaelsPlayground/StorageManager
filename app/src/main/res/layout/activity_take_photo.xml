@@ -57,19 +57,94 @@
                     android:id="@+id/chooseUnitNumber"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="none"> </AutoCompleteTextView>
+                    android:inputType="none"></AutoCompleteTextView>
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="8dp"
+                android:text="select the internal image number:"
+                android:textAlignment="center"
+                android:textSize="20sp" />
+
+            <RadioGroup
+                android:id="@+id/rgImageSelect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbImage1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="image 01" />
+
+                <RadioButton
+                    android:id="@+id/rbImage2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="image 02" />
+
+                <RadioButton
+                    android:id="@+id/rbImage3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="image 03" />
+
+            </RadioGroup>
 
             <Button
-                android:id="@+id/btnExportDatabaseToFile"
+                android:id="@+id/btnTakePhoto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginEnd="8dp"
-                android:text="take a photo and assign it to a unit"
+                android:text="take a photo"
                 android:textAllCaps="false" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="8dp"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <Button
+                    android:id="@+id/btnCropImageDefault"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="2dp"
+                    android:layout_weight="1"
+                    android:text="crop image default" />
+
+                <Button
+                    android:id="@+id/btnCropImageChose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="1"
+                    android:text="crop image choose" />
+
+                <Button
+                    android:id="@+id/btnUseUncroppedImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="1"
+                    android:text="use uncropped image" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/textView2"

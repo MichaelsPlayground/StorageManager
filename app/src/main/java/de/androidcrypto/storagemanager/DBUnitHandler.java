@@ -101,11 +101,18 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void addNewUnit(String unitNumber, String unitShortContent, String unitContent, String unitType,
+    public boolean addNewUnit(String unitNumber, String unitShortContent, String unitContent, String unitType,
                            String unitWeight,  String unitPlace, String unitRoom, String unitLastEdit,
                            String unitIdServer, String unitTagUid1, String unitTagUid2, String unitTagUid3,
                            String unitImageFilename1, String unitImageFilename2, String unitImageFilename3,
                            String unitDeleted) {
+
+        // check that unitNumber is unique
+        if (isUnitNumberDuplicate(unitNumber)) {
+            Log.d(TAG, "unitNumber is duplicate");
+            return false;
+        }
+
         // on below line we are creating a variable for
         // our sqlite database and calling writable method
         // as we are writing data in our database.
@@ -143,13 +150,19 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         // database after adding database.
         db.close();
         Log.d(TAG, "database entry added");
+        return true;
     }
 
-    public void updateUnit(String unitId, String unitIdServer, String unitNumber, String unitShortContent,
+    public boolean updateUnit(String unitId, String unitIdServer, String unitNumber, String unitShortContent,
                            String unitContent, String unitType, String unitWeight, String unitPlace, String unitRoom,
                            String unitLastEdit, String unitTagUid1, String unitTagUid2, String unitTagUid3,
                            String unitImageFilename1, String unitImageFilename2, String unitImageFilename3,
                            String unitDeleted) {
+        // check that unitNumber is unique
+        if (isUnitNumberDuplicate(unitNumber)) {
+            Log.d(TAG, "unitNumber is duplicate");
+            return false;
+        }
 
         // the LastEditValue is replaced by actual one.
         // The reason that it is in the parameter list is simple: same parameter data as for a "addUnit"
@@ -192,6 +205,7 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         // database after adding database.
         db.close();
         Log.d(TAG, "database entry updated for id " + unitId);
+        return true;
     }
 
     // below is the method for deleting our course.
@@ -290,5 +304,25 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         }
         c.close();
         return returnString;
+    }
+
+    public boolean isUnitNumberDuplicate(String searchString) {
+        return isDuplicate(UNIT_NUMBER, searchString);
+    }
+
+    public boolean isDuplicate(String columnName, String searchString) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + columnName + " = " + "'" +
+                searchString + "'", null);
+        if(c.moveToFirst())
+        {
+            c.close();
+            return true;
+        }
+        else
+        {
+            c.close();
+            return false;
+        }
     }
 }

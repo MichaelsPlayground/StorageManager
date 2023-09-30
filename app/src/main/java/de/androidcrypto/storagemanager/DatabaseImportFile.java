@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -35,6 +37,7 @@ public class DatabaseImportFile extends AppCompatActivity {
     private Context contextImportFile; // wird für read a file from uri benötigt
 
     private Button importDatabaseFromFile;
+    private TextView importResult;
     //int minimumPassphraseLength = 4; // todo check password length
     private DBUnitHandler dbUnitHandler;
     private Gson gson;
@@ -89,11 +92,13 @@ public class DatabaseImportFile extends AppCompatActivity {
                                 gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
                                 List<StorageUnitModel> unitList = convertJsonToClass(fileContent);
                                 if (unitList != null) {
-                                    Log.d(TAG, "found datasets: " + unitList.size());
-                                    if (unitList.size() > 0) {
-                                        for (int i = 0; i < unitList.size(); i++) {
+                                    int totalUnitsToImport = unitList.size();
+                                    int importedUnits = 0;
+                                    Log.d(TAG, "found datasets: " + totalUnitsToImport);
+                                    if (totalUnitsToImport > 0) {
+                                        for (int i = 0; i < totalUnitsToImport; i++) {
                                             StorageUnitModel unit = unitList.get(i);
-                                            dbUnitHandler.addNewUnit(unit.getUnitNumber(),
+                                            boolean success = dbUnitHandler.addNewUnit(unit.getUnitNumber(),
                                                     unit.getUnitShortContent(),
                                                     unit.getUnitContent(),
                                                     unit.getUnitType(),
@@ -109,7 +114,10 @@ public class DatabaseImportFile extends AppCompatActivity {
                                                     unit.getUnitImageFilename2(),
                                                     unit.getUnitImageFilename3(),
                                                     unit.getUnitDeleted());
+                                            if (success) importedUnits++;
                                         }
+                                        importResult = findViewById(R.id.tvImportResult);
+                                        importResult.setText("Imported units: " + importedUnits + " of " + totalUnitsToImport);
                                     }
                                 } else {
                                     Log.e(TAG, "cannot deserialize the  import file");
@@ -137,8 +145,10 @@ public class DatabaseImportFile extends AppCompatActivity {
     }
 
     private List<StorageUnitModel> convertJsonToClass(String jsonResponse) {
+        /*
         TypeToken<StorageUnitModel> dataAllType = new TypeToken<StorageUnitModel>() {
         };
+         */
         List<StorageUnitModel> unitList = gson.fromJson(jsonResponse, StorageUnitModelList.class);
         return unitList;
     }
