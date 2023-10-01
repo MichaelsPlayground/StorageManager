@@ -1,5 +1,7 @@
 package de.androidcrypto.storagemanager;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,15 +9,17 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -24,7 +28,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class UpdateUnitActivity extends AppCompatActivity implements ILockableActivity {
@@ -86,8 +89,8 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         unitImageFilename2 = findViewById(R.id.etUnitImageFilename2);
         unitImageFilename3 = findViewById(R.id.etUnitImageFilename3);
         showImage1 = findViewById(R.id.btnShowImage1);
-        //showImage2 = findViewById(R.id.btnShowImage2);
-        //showImage3 = findViewById(R.id.btnShowImage3);
+        showImage2 = findViewById(R.id.btnShowImage2);
+        showImage3 = findViewById(R.id.btnShowImage3);
 
         updateUnit = findViewById(R.id.btnUpdateUnit);
         abort = findViewById(R.id.btnAbort);
@@ -152,7 +155,39 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
                 }
                 // todo check for file availability as real file, both for thumbnail and original
 
-                onShowImage(filename);
+                onShowImage(filename, filename);
+            }
+        });
+
+        showImage2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "showImage2");
+                // check if image is available
+                String filename = unitImageFilename2.getText().toString();
+                if (TextUtils.isEmpty(filename)) {
+                    Log.d(TAG, "filename is not available");
+                    return;
+                }
+                // todo check for file availability as real file, both for thumbnail and original
+
+                onShowImage(filename, filename);
+            }
+        });
+
+        showImage3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "showImage3");
+                // check if image is available
+                String filename = unitImageFilename3.getText().toString();
+                if (TextUtils.isEmpty(filename)) {
+                    Log.d(TAG, "filename is not available");
+                    return;
+                }
+                // todo check for file availability as real file, both for thumbnail and original
+
+                onShowImage(filename, filename);
             }
         });
 
@@ -265,13 +300,13 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
     }
 
 
-    private void onShowImage(String filename) {
+    private void onShowImage(String title, String filename) {
 
         File file = new File("original", filename);
         //filename = "original/b12_1.jpg";
 
         FileInputStream fis = null;
-        Bitmap bitmap;
+        Bitmap bitmap = null;
         try {
             File dir=new File(getFilesDir(), "original");
             fis = new FileInputStream(new File(dir, filename));
@@ -288,10 +323,35 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
             return;
         }
         Log.d(TAG, "bmp available");
-
+        showImageAlertDialog(title, bitmap);
 
     }
 
+    private void showImageAlertDialog(String title, Bitmap bitmap) {
+        if (bitmap == null) {
+            Log.d(TAG, "bitmap is NULL");
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //Yes Button
+        builder.setPositiveButton("close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                //Toast.makeText(getApplicationContext(), "Yes button Clicked", Toast.LENGTH_LONG).show();
+                //Log.i("Code2care ", "Yes button Clicked!");
+                dialog.dismiss();
+            }
+        });
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialoglayout = inflater.inflate(R.layout.image_alert_dialog, null);
+        builder.setView(dialoglayout);
+        ImageView preview = dialoglayout.findViewById(R.id.ivPreviewImage);
+        preview.setImageBitmap(bitmap);
+        builder.setTitle(title);
+        builder.show();
+    }
 
     /**
      * section for options menu
