@@ -1,8 +1,12 @@
 package de.androidcrypto.storagemanager;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +22,14 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class UpdateUnitActivity extends AppCompatActivity implements ILockableActivity {
+
+    private static final String TAG = UpdateUnitActivity.class.getSimpleName();
 
     // variables for our edit text, button, strings and db-handler class.
 
@@ -26,6 +37,7 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
             unitContent, unitType, unitWeight, unitPlace, unitRoom, unitLastEdit, unitExternalId,
             unitTagUid1, unitTagUid2, unitTagUid3,
             unitImageFilename1, unitImageFilename2, unitImageFilename3;
+    private Button showImage1, showImage2, showImage3;
     private Button updateUnit, abort;
 
     private DBUnitHandler dbUnitHandler;
@@ -73,6 +85,10 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         unitImageFilename1 = findViewById(R.id.etUnitImageFilename1);
         unitImageFilename2 = findViewById(R.id.etUnitImageFilename2);
         unitImageFilename3 = findViewById(R.id.etUnitImageFilename3);
+        showImage1 = findViewById(R.id.btnShowImage1);
+        //showImage2 = findViewById(R.id.btnShowImage2);
+        //showImage3 = findViewById(R.id.btnShowImage3);
+
         updateUnit = findViewById(R.id.btnUpdateUnit);
         abort = findViewById(R.id.btnAbort);
 
@@ -120,6 +136,25 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         unitImageFilename1.setText(getIntent().getStringExtra("unitImageFilename1"));
         unitImageFilename2.setText(getIntent().getStringExtra("unitImageFilename2"));
         unitImageFilename3.setText(getIntent().getStringExtra("unitImageFilename3"));
+
+        // enable haptic feedback = vibrate
+        getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+
+        showImage1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "showImage1");
+                // check if image is available
+                String filename = unitImageFilename1.getText().toString();
+                if (TextUtils.isEmpty(filename)) {
+                    Log.d(TAG, "filename is not available");
+                    return;
+                }
+                // todo check for file availability as real file, both for thumbnail and original
+
+                onShowImage(filename);
+            }
+        });
 
         updateUnit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,6 +263,35 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         if ((TextUtils.isEmpty(unitRoomString)) || (unitRoomString.length() > 10)) return false;
         return success;
     }
+
+
+    private void onShowImage(String filename) {
+
+        File file = new File("original", filename);
+        //filename = "original/b12_1.jpg";
+
+        FileInputStream fis = null;
+        Bitmap bitmap;
+        try {
+            File dir=new File(getFilesDir(), "original");
+            fis = new FileInputStream(new File(dir, filename));
+
+            //fis = openFileInput(file.getAbsolutePath());
+            if(fis !=null && fis.available() > 0) {
+                bitmap = BitmapFactory.decodeStream(fis);
+            } else {
+                //input stream has not much data to convert into  Bitmap
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return;
+        }
+        Log.d(TAG, "bmp available");
+
+
+    }
+
 
     /**
      * section for options menu

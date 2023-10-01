@@ -28,6 +28,8 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity implements ILockableActivity {
 //public class MainActivity extends AppCompatActivity  {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     // stay on implementation 'androidx.appcompat:appcompat:1.3.1'
     // do not update to 1.4.0 if you are on SDK30
 

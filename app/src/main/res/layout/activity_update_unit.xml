@@ -405,14 +405,24 @@
                     tools:ignore="KeyboardInaccessibleWidget" />
             </com.google.android.material.textfield.TextInputLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="2dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etUnitImageFilename1Layout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
+                android:layout_width="250dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginEnd="0dp"
+                android:layout_weight="2"
                 android:hint="image filename 1"
                 app:boxCornerRadiusBottomEnd="5dp"
                 app:boxCornerRadiusBottomStart="5dp"
@@ -424,13 +434,25 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etUnitImageFilename1"
-                    android:layout_width="match_parent"
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="2"
                     android:ellipsize="end"
                     android:focusable="false"
                     android:text=""
                     tools:ignore="KeyboardInaccessibleWidget" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnShowImage1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                android:layout_weight="1"
+                android:text="show"
+                app:icon="@drawable/outline_preview_24" />
+
+        </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etUnitImageFilename2Layout"
