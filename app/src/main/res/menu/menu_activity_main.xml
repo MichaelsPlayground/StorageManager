@@ -31,9 +31,9 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_take_photo"
+        android:id="@+id/action_image_handling"
         android:icon="@drawable/ic_baseline_add_circle_outline_24"
-        android:title="take a photo"
+        android:title="image handling"
         app:showAsAction="never"/>
 
     <item

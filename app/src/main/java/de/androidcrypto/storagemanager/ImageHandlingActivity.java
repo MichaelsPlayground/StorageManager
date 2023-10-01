@@ -74,7 +74,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
     private String IMAGE_FILE_NAME;
     private final String IMAGE_FOLDER_FULL_RESOLUTION = "original";
     private final String IMAGE_FOLDER_THUMBNAIL = "thumbnail";
-
+    private final int MAX_THUMBNAIL_SIZE = 100;
     private final String CACHE_FOLDER = "crop";
     private String intermediateName = "1.jpg";
     private String resultName = "2.jpg";
@@ -95,7 +95,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_take_photo);
+        setContentView(R.layout.activity_image_handling);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
@@ -405,23 +405,58 @@ public class ImageHandlingActivity extends AppCompatActivity {
         //String subfolder = "original";
         generateImageFilename();
         Bitmap bitmap = uriToBitmap(imageUriFull);
-        //boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, filename);
-        boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, IMAGE_FOLDER_FULL_RESOLUTION, IMAGE_FILE_NAME);
 
-        int maxThumbnailSize = 100;
-        success = saveImageToInternalStorage(getApplicationContext(), getResizedBitmap(bitmap, maxThumbnailSize), IMAGE_FOLDER_THUMBNAIL, IMAGE_FILE_NAME);
-
-        Log.d(TAG, "saveImageToInternalStorage: " + success);
+        boolean success1 = saveImageToInternalStorage(getApplicationContext(), bitmap, IMAGE_FOLDER_FULL_RESOLUTION, IMAGE_FILE_NAME);
+        boolean success2 = saveImageToInternalStorage(getApplicationContext(), getResizedBitmap(bitmap, MAX_THUMBNAIL_SIZE), IMAGE_FOLDER_THUMBNAIL, IMAGE_FILE_NAME);
+        if ((success1) && (success2)) {
+            // update the unit entry
+            int unitId = dbUnitHandler.getIdFromUnitNumber(selectedUnitNumber);
+            if (unitId < 0) {
+                Log.d(TAG, "unitId is not existing, no storage");
+                return;
+            }
+            if (rbUseAsImage1.isChecked()) {
+                dbUnitHandler.updateUnitImageFilename1(String.valueOf(unitId), IMAGE_FILE_NAME);
+                Log.d(TAG, "filename1 updated");
+            } else if (rbUseAsImage2.isChecked()) {
+                dbUnitHandler.updateUnitImageFilename2(String.valueOf(unitId), IMAGE_FILE_NAME);
+                Log.d(TAG, "filename2 updated");
+            } else {
+                dbUnitHandler.updateUnitImageFilename3(String.valueOf(unitId), IMAGE_FILE_NAME);
+                Log.d(TAG, "filename3 updated");
+            }
+            Log.d(TAG, "saveImageToInternalStorage: SUCCESS");
+        } else {
+            Log.d(TAG, "saveImageToInternalStorage: FAILURE");
+        }
     }
 
     private void onSaveXCroppedImage() {
-
-        String filename = "b123cr.jpg";
-        String subfolder = "thumbnail";
+        generateImageFilename();
         Bitmap bitmap = uriToBitmap(imageUriCrop);
-        //boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, filename);
-        boolean success = saveImageToInternalStorage(getApplicationContext(), bitmap, subfolder, filename);
-        Log.d(TAG, "saveImageToInternalStorage: " + success);
+        boolean success1 = saveImageToInternalStorage(getApplicationContext(), bitmap, IMAGE_FOLDER_FULL_RESOLUTION, IMAGE_FILE_NAME);
+        boolean success2 = saveImageToInternalStorage(getApplicationContext(), getResizedBitmap(bitmap, MAX_THUMBNAIL_SIZE), IMAGE_FOLDER_THUMBNAIL, IMAGE_FILE_NAME);
+        if ((success1) && (success2)) {
+            // update the unit entry
+            int unitId = dbUnitHandler.getIdFromUnitNumber(selectedUnitNumber);
+            if (unitId < 0) {
+                Log.d(TAG, "unitId is not existing, no storage");
+                return;
+            }
+            if (rbUseAsImage1.isChecked()) {
+                dbUnitHandler.updateUnitImageFilename1(String.valueOf(unitId), IMAGE_FILE_NAME);
+                Log.d(TAG, "filename1 updated");
+            } else if (rbUseAsImage2.isChecked()) {
+                dbUnitHandler.updateUnitImageFilename2(String.valueOf(unitId), IMAGE_FILE_NAME);
+                Log.d(TAG, "filename2 updated");
+            } else {
+                dbUnitHandler.updateUnitImageFilename3(String.valueOf(unitId), IMAGE_FILE_NAME);
+                Log.d(TAG, "filename3 updated");
+            }
+            Log.d(TAG, "saveImageToInternalStorage: SUCCESS");
+        } else {
+            Log.d(TAG, "saveImageToInternalStorage: FAILURE");
+        }
     }
 
     private void onSaveFullImage() {

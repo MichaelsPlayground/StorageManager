@@ -24,7 +24,8 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
 
     private com.google.android.material.textfield.TextInputEditText unitNumber, unitShortContent,
             unitContent, unitType, unitWeight, unitPlace, unitRoom, unitLastEdit, unitExternalId,
-            unitTagUid1, unitTagUid2, unitTagUid3;
+            unitTagUid1, unitTagUid2, unitTagUid3,
+            unitImageFilename1, unitImageFilename2, unitImageFilename3;
     private Button updateUnit, abort;
 
     private DBUnitHandler dbUnitHandler;
@@ -69,7 +70,9 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         unitTagUid1 = findViewById(R.id.etUnitTagUid1);
         unitTagUid2 = findViewById(R.id.etUnitTagUid2);
         unitTagUid3 = findViewById(R.id.etUnitTagUid3);
-
+        unitImageFilename1 = findViewById(R.id.etUnitImageFilename1);
+        unitImageFilename2 = findViewById(R.id.etUnitImageFilename2);
+        unitImageFilename3 = findViewById(R.id.etUnitImageFilename3);
         updateUnit = findViewById(R.id.btnUpdateUnit);
         abort = findViewById(R.id.btnAbort);
 
@@ -114,10 +117,9 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         unitTagUid2.setText(getIntent().getStringExtra("unitTagUid2"));
         unitTagUid3.setText(getIntent().getStringExtra("unitTagUid3"));
         String unitDeleted = getIntent().getStringExtra("unitDeleted");
-        String unitImageFilename1 = getIntent().getStringExtra("unitImageFilename1");
-        String unitImageFilename2 = getIntent().getStringExtra("unitImageFilename2");
-        String unitImageFilename3 = getIntent().getStringExtra("unitImageFilename3");
-
+        unitImageFilename1.setText(getIntent().getStringExtra("unitImageFilename1"));
+        unitImageFilename2.setText(getIntent().getStringExtra("unitImageFilename2"));
+        unitImageFilename3.setText(getIntent().getStringExtra("unitImageFilename3"));
 
         updateUnit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -144,9 +146,9 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
                         unitTagUid1.getText().toString(),
                         unitTagUid2.getText().toString(),
                         unitTagUid3.getText().toString(),
-                        unitImageFilename1,
-                        unitImageFilename2,
-                        unitImageFilename3,
+                        unitImageFilename1.getText().toString(),
+                        unitImageFilename2.getText().toString(),
+                        unitImageFilename3.getText().toString(),
                         unitDeleted);
 
                 Toast.makeText(UpdateUnitActivity.this, "Eintrag geändert..", Toast.LENGTH_SHORT).show();

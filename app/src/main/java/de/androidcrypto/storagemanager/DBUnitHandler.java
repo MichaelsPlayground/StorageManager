@@ -208,6 +208,91 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         return true;
     }
 
+    public boolean updateUnitTagUid1(String unitId, String tagUid) {
+        // on below line we are updating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UNIT_TAG_UID_1, tagUid);
+        int result = db.update(TABLE_NAME, contentValues, "id=?", new String[]{unitId});
+        db.close();
+        Log.d(TAG, "database entry updated for id " + unitId + " with tagUid1: " + tagUid);
+        Log.d(TAG, "update result: " + result);
+        return true;
+    }
+
+    public boolean updateUnitTagUid2(String unitId, String tagUid) {
+        // on below line we are updating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UNIT_TAG_UID_2, tagUid);
+        int result = db.update(TABLE_NAME, contentValues, "id=?", new String[]{unitId});
+        db.close();
+        Log.d(TAG, "database entry updated for id " + unitId + " with tagUid2: " + tagUid);
+        Log.d(TAG, "update result: " + result);
+        return true;
+    }
+
+    public boolean updateUnitTagUid3(String unitId, String tagUid) {
+        // on below line we are updating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UNIT_TAG_UID_3, tagUid);
+        int result = db.update(TABLE_NAME, contentValues, "id=?", new String[]{unitId});
+        db.close();
+        Log.d(TAG, "database entry updated for id " + unitId + " with tagUid3: " + tagUid);
+        Log.d(TAG, "update result: " + result);
+        return true;
+    }
+
+    public boolean updateUnitImageFilename1(String unitId, String filename) {
+        // on below line we are updating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UNIT_IMAGE_FILENAME_1, filename);
+        int result = db.update(TABLE_NAME, contentValues, "id=?", new String[]{unitId});
+        db.close();
+        Log.d(TAG, "database entry updated for id " + unitId + " with filename1: " + filename);
+        Log.d(TAG, "update result: " + result);
+        return true;
+    }
+
+    public boolean updateUnitImageFilename2(String unitId, String filename) {
+        // on below line we are updating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UNIT_IMAGE_FILENAME_2, filename);
+        int result = db.update(TABLE_NAME, contentValues, "id=?", new String[]{unitId});
+        db.close();
+        Log.d(TAG, "database entry updated for id " + unitId + " with filename2: " + filename);
+        Log.d(TAG, "update result: " + result);
+        return true;
+    }
+
+    public boolean updateUnitImageFilename3(String unitId, String filename) {
+        // on below line we are updating a variable for
+        // our sqlite database and calling writable method
+        // as we are writing data in our database.
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(UNIT_IMAGE_FILENAME_3, filename);
+        int result = db.update(TABLE_NAME, contentValues, "id=?", new String[]{unitId});
+        db.close();
+        Log.d(TAG, "database entry updated for id " + unitId + " with filename3: " + filename);
+        Log.d(TAG, "update result: " + result);
+        return true;
+    }
+
+
     // below is the method for deleting our course.
     public void deleteAllUnits() {
 
@@ -273,6 +358,7 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         // at last closing our cursor
         // and returning our array list.
         cursorUnits.close();
+        db.close();
         return unitModelArrayList;
     }
 
@@ -294,15 +380,16 @@ public class DBUnitHandler extends SQLiteOpenHelper {
         // https://stackoverflow.com/a/44339427/8166854
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT " + UNIT_NUMBER + " FROM " + TABLE_NAME + ";";
-        Cursor c = db.rawQuery(query, null);
-        String returnString[] = new String[c.getCount()]; // # elements = rows
+        Cursor cursor = db.rawQuery(query, null);
+        String returnString[] = new String[cursor.getCount()]; // # elements = rows
         int i = 0;
-        while (c.moveToNext()) {
-            returnString[i++] = c.getString(
-                    c.getColumnIndex(UNIT_NUMBER)
+        while (cursor.moveToNext()) {
+            returnString[i++] = cursor.getString(
+                    cursor.getColumnIndex(UNIT_NUMBER)
             );
         }
-        c.close();
+        cursor.close();
+        db.close();
         return returnString;
     }
 
@@ -312,17 +399,34 @@ public class DBUnitHandler extends SQLiteOpenHelper {
 
     public boolean isDuplicate(String columnName, String searchString) {
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + columnName + " = " + "'" +
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + columnName + " = " + "'" +
                 searchString + "'", null);
-        if(c.moveToFirst())
+        if(cursor.moveToFirst())
         {
-            c.close();
+            cursor.close();
+            db.close();
             return true;
         }
         else
         {
-            c.close();
+            cursor.close();
+            db.close();
             return false;
         }
+    }
+
+    public int getIdFromUnitNumber(String unitNumber) {
+        Log.d(TAG, "getIdFromUnitNumber: " + unitNumber);
+        SQLiteDatabase db = this.getReadableDatabase();
+        //Cursor cursor = db.rawQuery("SELECT id FROM user WHERE unitNumber=?", new String[]{unitNumber});
+        //Cursor cursor = db.rawQuery("SELECT id FROM user WHERE unitNumber=?", new String[]{unitNumber});
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + UNIT_NUMBER + " = " + "'" +
+                unitNumber + "'", null);
+        int id = -1;
+        if (cursor.moveToFirst()) id = cursor.getInt(0);
+        cursor.close();
+        db.close();
+        Log.d(TAG, "tagId found: " + id);
+        return id;
     }
 }

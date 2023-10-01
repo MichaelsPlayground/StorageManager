@@ -26,6 +26,7 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements ILockableActivity {
+//public class MainActivity extends AppCompatActivity  {
 
     // stay on implementation 'androidx.appcompat:appcompat:1.3.1'
     // do not update to 1.4.0 if you are on SDK30
@@ -78,7 +79,6 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         RecyclerView recyclerView = findViewById(R.id.idRVUnits);
         recyclerView.setVisibility(View.VISIBLE);
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
             //alertView(message);
             errorAndQuitAlert(message);
         }
-
     }
 
     @Override
@@ -225,8 +224,8 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
             }
         });
 
-        MenuItem mTakePhoto = menu.findItem(R.id.action_take_photo);
-        mTakePhoto.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        MenuItem mImageHandling = menu.findItem(R.id.action_image_handling);
+        mImageHandling.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 Intent i = new Intent(MainActivity.this, ImageHandlingActivity.class);
