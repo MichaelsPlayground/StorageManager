@@ -347,7 +347,9 @@ public class UpdateUnitActivity extends AppCompatActivity implements ILockableAc
         LayoutInflater inflater = getLayoutInflater();
         View dialoglayout = inflater.inflate(R.layout.image_alert_dialog, null);
         builder.setView(dialoglayout);
-        ImageView preview = dialoglayout.findViewById(R.id.ivPreviewImage);
+        //TouchImageView preview = new TouchImageView(getApplicationContext());
+        TouchImageView preview = dialoglayout.findViewById(R.id.ivPreviewImage);
+        //ImageView preview = dialoglayout.findViewById(R.id.ivPreviewImage);
         preview.setImageBitmap(bitmap);
         builder.setTitle(title);
         builder.show();

@@ -106,6 +106,13 @@ implementation 'androidx.biometric:biometric:1.1.0'
 implementation 'com.google.code.gson:gson:2.10.1'
 ```
 
+other libraries:
+```plaintext
+for Image Zooming: 
+https://github.com/AleBarreto/FirebaseAndroidChat
+TouchImageView.java: https://github.com/AleBarreto/FirebaseAndroidChat/blob/master/app/src/main/java/alessandro/firebaseandroid/view/TouchImageView.java
+License: MIT License
+```
 
 
 
