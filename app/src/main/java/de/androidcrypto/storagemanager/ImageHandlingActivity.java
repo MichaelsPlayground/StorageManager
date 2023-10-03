@@ -64,7 +64,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
 
     // take and crop images
-    private Button takePhoto, browseGallery, cropImageDefault, cropImageChose, useUncroppedImage;
+    private Button takePhoto, browseGallery, cropImageDefault, cropImageChose;//, useUncroppedImage;
     private ImageButton imageRotateRight, imageRotateLeft;
     private Button saveUncroppedImage, saveCroppedImage;
     private RadioButton rbUseAsImage1, rbUseAsImage2, rbUseAsImage3;
@@ -74,7 +74,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
     private String IMAGE_FILE_NAME;
     private final String IMAGE_FOLDER_FULL_RESOLUTION = "original";
     private final String IMAGE_FOLDER_THUMBNAIL = "thumbnail";
-    private final int MAX_THUMBNAIL_SIZE = 100;
+    private final int MAX_THUMBNAIL_SIZE = 300;
     private final String CACHE_FOLDER = "crop";
     private String intermediateName = "1.jpg";
     private String resultName = "2.jpg";
@@ -89,7 +89,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
     private Uri imageUriFull, imageUriCrop;
     private int imageOrientation;
-    private boolean useFixedCropper = true;
 
 
     @Override
@@ -106,7 +105,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
         imageRotateLeft = findViewById(R.id.ibtnRotateLeft);
         cropImageDefault = findViewById(R.id.btnCropImageDefault);
         cropImageChose = findViewById(R.id.btnCropImageChose);
-        useUncroppedImage = findViewById(R.id.btnUseUncroppedImage);
 
         saveUncroppedImage = findViewById(R.id.btnSaveUncroppedImage);
         saveCroppedImage = findViewById(R.id.btnSaveCroppedImage);
@@ -138,7 +136,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 selectedUnitNumber = chooseUnitNumber.getText().toString();
                 Log.d(TAG, "selected unit number: " + selectedUnitNumber);
                 // take a photo, crop it and store it
-
                 // radio group for selecting image 1 / 2 / 3
 
             }
@@ -149,9 +146,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "takePhoto");
 
-                // todo checks is unit number selected
-
-                onLaunchCamera();
+                if (isUnitSelected()) onLaunchCamera();
             }
         });
 
@@ -160,10 +155,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "browseGallery");
 
-                // todo checks is unit number selected
-
-                onBrowseGallery();
-
+                if (isUnitSelected()) onBrowseGallery();
             }
         });
 
@@ -172,8 +164,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "imageRotateRight");
 
-                // todo checks is unit number selected and image available
-                onImageRotateRight();
+                if (isImageAvailable()) onImageRotateRight();
             }
         });
 
@@ -182,8 +173,16 @@ public class ImageHandlingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "imageRotateLeft");
 
-                // todo checks is unit number selected and image available
-                onImageRotateLeft();
+                if (isImageAvailable()) onImageRotateLeft();
+            }
+        });
+
+        cropImageDefault.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "cropImageDefault");
+
+                if (isImageAvailable()) onCropImage(true);
             }
         });
 
@@ -192,9 +191,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "cropImageChose");
 
-                // todo checks is unit number selected and image available
-
-                onCropImage();
+                if (isImageAvailable()) onCropImage(false);
             }
         });
 
@@ -203,9 +200,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "saveUncroppedImage");
 
-                // todo checks is unit number selected and image available
-
-                onSaveUncroppedImage();
+                if (isImageAvailable()) onSaveUncroppedImage();
             }
         });
 
@@ -214,9 +209,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d(TAG, "saveCroppedImage");
 
-                // todo checks is unit number selected and image available
-
-                onSaveXCroppedImage();
+                if (isCroppedImageAvailable()) onSaveCroppedImage();
             }
         });
 
@@ -281,10 +274,10 @@ public class ImageHandlingActivity extends AppCompatActivity {
                         tvCrop.setText(imageInfo);
                     }
                 });
-
     }
 
     public void onLaunchCamera() {
+        App.increaseCounter();
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File photoFile = getPhotoFileUri(intermediateName);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
@@ -331,16 +324,13 @@ public class ImageHandlingActivity extends AppCompatActivity {
         saveBitmapFileToIntermediate(inputImage);
     }
 
-    private void onCropImage() {
+    private void onCropImage(boolean useDefaultCropper) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             grantUriPermission("com.android.camera", intermediateProvider, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             Intent intent = new Intent("com.android.camera.action.CROP");
             intent.setDataAndType(intermediateProvider, "image/*");
-
             List<ResolveInfo> list = getPackageManager().queryIntentActivities(intent, 0);
-
             int size = 0;
-
             if (list != null) {
                 grantUriPermission(list.get(0).activityInfo.packageName, intermediateProvider, Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 size = list.size();
@@ -364,7 +354,7 @@ public class ImageHandlingActivity extends AppCompatActivity {
 
                 Intent cropIntent = new Intent(intent);
                 //if (rbChooseCropperApplicationFixed0.isChecked()) {
-                if (useFixedCropper) {
+                if (useDefaultCropper) {
                     ResolveInfo res = list.get(0);
                     cropIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     cropIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -399,15 +389,33 @@ public class ImageHandlingActivity extends AppCompatActivity {
         }
     }
 
-    private void onSaveUncroppedImage() {
+    private boolean isUnitSelected() {
+        if (TextUtils.isEmpty(selectedUnitNumber)) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-        //String filename = "b1234.jpg";
-        //String subfolder = "original";
+    private boolean isImageAvailable() {
+        if (!isUnitSelected()) return false; // there was no unit selected before
+        if (imageUriFull == null) return false;
+        return true;
+    }
+
+    private boolean isCroppedImageAvailable() {
+        if (!isUnitSelected()) return false; // there was no unit selected before
+        if (imageUriFull == null) return false;
+        if (imageUriCrop == null) return false;
+        return true;
+    }
+
+    private void onSaveUncroppedImage() {
         generateImageFilename();
         Bitmap bitmap = uriToBitmap(imageUriFull);
 
-        boolean success1 = saveImageToInternalStorage(getApplicationContext(), bitmap, IMAGE_FOLDER_FULL_RESOLUTION, IMAGE_FILE_NAME);
-        boolean success2 = saveImageToInternalStorage(getApplicationContext(), getResizedBitmap(bitmap, MAX_THUMBNAIL_SIZE), IMAGE_FOLDER_THUMBNAIL, IMAGE_FILE_NAME);
+        boolean success1 = saveImageToInternalStorage(bitmap, IMAGE_FOLDER_FULL_RESOLUTION, IMAGE_FILE_NAME);
+        boolean success2 = saveImageToInternalStorage(getResizedBitmap(bitmap, MAX_THUMBNAIL_SIZE), IMAGE_FOLDER_THUMBNAIL, IMAGE_FILE_NAME);
         if ((success1) && (success2)) {
             // update the unit entry
             int unitId = dbUnitHandler.getIdFromUnitNumber(selectedUnitNumber);
@@ -426,16 +434,17 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 Log.d(TAG, "filename3 updated");
             }
             Log.d(TAG, "saveImageToInternalStorage: SUCCESS");
+            writeToUiToast("image saved");
         } else {
             Log.d(TAG, "saveImageToInternalStorage: FAILURE");
         }
     }
 
-    private void onSaveXCroppedImage() {
+    private void onSaveCroppedImage() {
         generateImageFilename();
         Bitmap bitmap = uriToBitmap(imageUriCrop);
-        boolean success1 = saveImageToInternalStorage(getApplicationContext(), bitmap, IMAGE_FOLDER_FULL_RESOLUTION, IMAGE_FILE_NAME);
-        boolean success2 = saveImageToInternalStorage(getApplicationContext(), getResizedBitmap(bitmap, MAX_THUMBNAIL_SIZE), IMAGE_FOLDER_THUMBNAIL, IMAGE_FILE_NAME);
+        boolean success1 = saveImageToInternalStorage(bitmap, IMAGE_FOLDER_FULL_RESOLUTION, IMAGE_FILE_NAME);
+        boolean success2 = saveImageToInternalStorage(getResizedBitmap(bitmap, MAX_THUMBNAIL_SIZE), IMAGE_FOLDER_THUMBNAIL, IMAGE_FILE_NAME);
         if ((success1) && (success2)) {
             // update the unit entry
             int unitId = dbUnitHandler.getIdFromUnitNumber(selectedUnitNumber);
@@ -454,26 +463,9 @@ public class ImageHandlingActivity extends AppCompatActivity {
                 Log.d(TAG, "filename3 updated");
             }
             Log.d(TAG, "saveImageToInternalStorage: SUCCESS");
+            writeToUiToast("image saved");
         } else {
             Log.d(TAG, "saveImageToInternalStorage: FAILURE");
-        }
-    }
-
-    private void onSaveFullImage() {
-        String toastMessage;
-        if ((imageUriFull == null) || (TextUtils.isEmpty(imageUriFull.toString()))) {
-            toastMessage = "Please crop an image first before trying to save the result :-)";
-            writeToUiToast(toastMessage);
-            return;
-        }
-        String fileName = createImageFileName(false);
-        boolean success = saveImageToExternalStorage(fileName, uriToBitmap(imageUriFull));
-        if (success) {
-            toastMessage = "full image " + fileName + " written to Picture folder with SUCCESS";
-            writeToUiToast(toastMessage);
-        } else {
-            toastMessage = "fullimage " + fileName + " NOT written to Picture folder (FAILURE)";
-            writeToUiToast(toastMessage);
         }
     }
 
@@ -487,42 +479,6 @@ public class ImageHandlingActivity extends AppCompatActivity {
         if (rbUseAsImage3.isChecked()) sb.append("3");
         sb.append(FIXED_IMAGE_EXTENSION);
         IMAGE_FILE_NAME = sb.toString();
-    }
-
-    private void onSaveCroppedImage() {
-        String toastMessage;
-        if ((imageUriCrop == null) || (TextUtils.isEmpty(imageUriCrop.toString()))) {
-            toastMessage = "Please crop an image first before trying to save the result :-)";
-            writeToUiToast(toastMessage);
-            return;
-        }
-        String fileName = createImageFileName(true);
-        boolean success = saveImageToExternalStorage(fileName, uriToBitmap(imageUriCrop));
-        if (success) {
-            toastMessage = "cropped image " + fileName + " written to Picture folder with SUCCESS";
-            writeToUiToast(toastMessage);
-        } else {
-            toastMessage = "cropped image " + fileName + " NOT written to Picture folder (FAILURE)";
-            writeToUiToast(toastMessage);
-        }
-    }
-
-    @SuppressLint("Range")
-    public Bitmap rotateBitmap(Bitmap input, Uri uri) {
-        Log.d(TAG, "rotateBitmap");
-        String[] orientationColumn = {MediaStore.Images.Media.ORIENTATION};
-        Cursor cur = getContentResolver().query(uri, orientationColumn, null, null, null);
-        int orientation = -1;
-        if (cur != null && cur.moveToFirst()) {
-            orientation = cur.getInt(cur.getColumnIndex(orientationColumn[0]));
-        }
-        Matrix rotationMatrix = new Matrix();
-        rotationMatrix.setRotate(orientation);
-        Bitmap cropped = Bitmap.createBitmap(input, 0, 0, input.getWidth(), input.getHeight(), rotationMatrix, true);
-        if (cur != null) {
-            cur.close();
-        }
-        return cropped;
     }
 
     /*
@@ -646,89 +602,6 @@ This key is available on all devices.
         return Bitmap.createScaledBitmap(image, width, height, true);
     }
 
-
-    // two different methods for Android < 10 and Android >= 10 ("Q")
-    private boolean saveImageToExternalStorage(String imgName, Bitmap bmp) {
-        Log.d(TAG, "saveImageToExternalStorage imgName: " + imgName);
-        if (TextUtils.isEmpty(imgName)) {
-            Log.d(TAG, "imgName is null or empty, aborted");
-            return false;
-        }
-        if (bmp == null) {
-            Log.d(TAG, "bmp is null, aborted");
-            return false;
-        }
-        // https://www.youtube.com/watch?v=nA4XWsG9IPM
-        Uri imageCollection = null;
-        ContentResolver resolver = getContentResolver();
-        // > SDK 28
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Log.d(TAG, "saveImageToExternalStorage Android version is >= 10");
-            imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
-
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, imgName + FIXED_IMAGE_EXTENSION);
-            contentValues.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-            Uri imageUri = resolver.insert(imageCollection, contentValues);
-            try {
-                OutputStream outputStream = resolver.openOutputStream(Objects.requireNonNull(imageUri));
-                bmp.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-                Objects.requireNonNull(outputStream);
-                Log.d(TAG, "the image was stored");
-                return true;
-            } catch (Exception e) {
-                Toast.makeText(this, "Image not saved: \n" + e, Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-        } else {
-            Log.d(TAG, "saveImageToExternalStorage Android version is < 10");
-            // see https://stackoverflow.com/a/65141440/8166854
-            //File pictureDirectory = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"My");
-            File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            if (!pictureDirectory.exists()){
-                pictureDirectory.mkdir();
-            }
-            File bitmapFile = new File(pictureDirectory, imgName + FIXED_IMAGE_EXTENSION);
-            try {
-                FileOutputStream fileOutputStream = new FileOutputStream(bitmapFile);
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
-                fileOutputStream.flush();
-                fileOutputStream.close();
-                // update Gallery
-                scanFile(bitmapFile.getAbsolutePath());
-                return true;
-            } catch (IOException e) {
-                Toast.makeText(this, "Image not saved: \n" + e, Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    // update the gallery index
-    private void scanFile(String path) {
-        MediaScannerConnection.scanFile(ImageHandlingActivity.this,
-                new String[] { path }, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-
-                    public void onScanCompleted(String path, Uri uri) {
-                        Log.i("TAG", "Finished scanning " + path);
-                    }
-                });
-    }
-
-    // does not add the  file extension to be flexible
-    private String createImageFileName(boolean isCropped) {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String fileName = "";
-        if (isCropped) {
-            fileName = timeStamp + "_cr";
-        } else {
-            fileName = timeStamp;
-        }
-        return fileName;
-    }
-
     private Bitmap uriToBitmap(Uri selectedFileUri) {
         try {
             Log.d(TAG, "uriToBitmap with Uri: " + selectedFileUri);
@@ -750,21 +623,7 @@ This key is available on all devices.
         return null;
     }
 
-    public boolean saveImageToInternalStorage(Context context, Bitmap b, String imageName) {
-        FileOutputStream foStream;
-        try {
-            foStream = context.openFileOutput(imageName, Context.MODE_PRIVATE);
-            b.compress(Bitmap.CompressFormat.JPEG, 100, foStream);
-            foStream.close();
-            return true;
-        } catch (Exception e) {
-            Log.e(TAG, "Exception : " + e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public boolean saveImageToInternalStorage(Context context, Bitmap b, String subfolder,  String imageName) {
+    public boolean saveImageToInternalStorage(Bitmap b, String subfolder,  String imageName) {
         File dir=new File(getFilesDir(), subfolder);
         dir.mkdirs();
         FileOutputStream foStream;

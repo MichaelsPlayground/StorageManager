@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentActivity;
 
 public class App extends Application implements Application.ActivityLifecycleCallbacks {
     private static App instance;
-    private int countStarted = 0;
+    private static int countStarted = 0;
     //private BiometricPrompt prompt;
     //private BiometricPrompt.PromptInfo promptInfo;
     private boolean isLocked = true;
@@ -26,6 +26,9 @@ public class App extends Application implements Application.ActivityLifecycleCal
     private static final int BIOMETRIC_WEAK = BiometricManager.Authenticators.BIOMETRIC_WEAK; // not used
     private static final int DEVICE_CREDENTIAL = BiometricManager.Authenticators.DEVICE_CREDENTIAL;
 
+    public static void increaseCounter() {
+        countStarted++;
+    }
 
     @Override
     public void onCreate() {
@@ -70,7 +73,6 @@ public class App extends Application implements Application.ActivityLifecycleCal
     }
 
     public static void showBiometricPrompt(FragmentActivity activity) {
-        //Log.d("SecretDiary", "show biometric prompt");
         if (activity instanceof ILockableActivity)
             ((ILockableActivity) activity).lock();
         BiometricPrompt prompt = new BiometricPrompt(activity, new BiometricPrompt.AuthenticationCallback() {

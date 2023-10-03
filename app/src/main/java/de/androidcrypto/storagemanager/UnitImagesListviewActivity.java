@@ -25,10 +25,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements ILockableActivity {
-//public class MainActivity extends AppCompatActivity  {
+public class UnitImagesListviewActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = UnitImagesListviewActivity.class.getSimpleName();
 
     // stay on implementation 'androidx.appcompat:appcompat:1.3.1'
     // do not update to 1.4.0 if you are on SDK30
@@ -38,23 +37,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
     // https://stackoverflow.com/questions/35866370/implementing-add-to-favourite-mechanism-in-recyclerview
 
 
-    // pbkdf2withhmac256 ist erst ab SDK 26 verfügbar, daher setting min sdk 26
 
-    // add in gradle.build (module)
-    // implementation "androidx.security:security-crypto:1.0.0"
-    // https://developer.android.com/topic/security/data
-
-    // sdk version checks, correct values added later in checkSdkVersion
-    private int sdkVersion = 20;
-    private boolean sdkIsMin23Max29 = false; // sdk version is in the range 23-29 [VERSION_CODES.M-Q]
-    private boolean sdkIsMin30 = false; // sdk version is in the range 30+ [VERSION_CODES.R]
-    private static final int BIOMETRIC_STRONG = BiometricManager.Authenticators.BIOMETRIC_STRONG;
-    private static final int BIOMETRIC_WEAK = BiometricManager.Authenticators.BIOMETRIC_WEAK; // not used
-    private static final int DEVICE_CREDENTIAL = BiometricManager.Authenticators.DEVICE_CREDENTIAL;
-
-    // stores data in an encrypted file
-    String mainKeyAlias; // for the masterKey
-    String encryptedPreferencesFilename = "encryptedpreferences.dat";
 
     FloatingActionButton btnAddUnit;
 
@@ -62,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
 
     // recycler view
     private ArrayList<StorageUnitModel> unitModelArrayList;
-    private UnitRVAdapter unitRVAdapter;
+    private UnitImagesRVAdapter unitImagesRVAdapter;
     private RecyclerView unitsRV;
 
     @Override
@@ -71,37 +54,19 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
     }
 
     @Override
-    public void lock() {
-        RecyclerView recyclerView = findViewById(R.id.idRVUnits);
-        recyclerView.setVisibility(View.GONE);
-    }
-
-    @Override
-    public void unlock() {
-        RecyclerView recyclerView = findViewById(R.id.idRVUnits);
-        recyclerView.setVisibility(View.VISIBLE);
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_unit_images_listview);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
-
-        // init the crypto part
-        boolean initSuccess = Cryptography.cryptographicInit(getApplicationContext());
-        if (!initSuccess) {
-            errorAndQuitAlert("Die sichere Datenspeicherung konnte nicht eingerichtet werden. Die Nutzung der App ist leider nicht möglich.");
-        }
 
         // enable haptic feedback = vibrate
         getWindow().getDecorView().performHapticFeedback(HapticFeedbackConstants.VIRTUAL_KEY, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
 
         // creating a new dbhandler class
         // and passing our context to it.
-        dbUnitHandler = new DBUnitHandler(MainActivity.this);
+        dbUnitHandler = new DBUnitHandler(UnitImagesListviewActivity.this);
 
         // activate on creation
         RecyclerView recyclerView = findViewById(R.id.idRVUnits);
@@ -121,34 +86,25 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
                 unitModelFilteredArrayList.add(unitModelArrayList.get(l));
             }
         }
-        unitRVAdapter = new UnitRVAdapter(unitModelFilteredArrayList, de.androidcrypto.storagemanager.MainActivity.this);
+        unitImagesRVAdapter = new UnitImagesRVAdapter(unitModelFilteredArrayList, UnitImagesListviewActivity.this);
         unitsRV = findViewById(R.id.idRVUnits);
 
         // setting layout manager for our recycler view.
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(de.androidcrypto.storagemanager.MainActivity.this, RecyclerView.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(UnitImagesListviewActivity.this, RecyclerView.VERTICAL, false);
         unitsRV.setLayoutManager(linearLayoutManager);
 
         // setting our adapter to recycler view.
-        unitsRV.setAdapter(unitRVAdapter);
+        unitsRV.setAdapter(unitImagesRVAdapter);
 
         btnAddUnit = (FloatingActionButton) findViewById(R.id.fabAddUnit);
         btnAddUnit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, AddUnitActivity.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, AddUnitActivity.class);
                 startActivity(i);
             }
         });
 
-        checkSdkVersion();
-        boolean biometricReadyToUse = checkBiometric();
-        if (biometricReadyToUse) {
-            // nothing special, app runs as expected
-        } else {
-            String message = "Auf diesem Gerät wurde noch keine\nSperrbildschirm-PIN und/oder kein\nFingerprint registriert.\n\nDie App kann nicht gestartet werden.";
-            //alertView(message);
-            errorAndQuitAlert(message);
-        }
     }
 
     @Override
@@ -177,16 +133,16 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
                     }
 
                     // original: courseRVAdapter = new CourseRVAdapter(courseModalArrayList, de.androidcrypto.sqllitetutorial1.ViewFilteredCourses.this);
-                    unitRVAdapter = new UnitRVAdapter(unitModelFilteredArrayList, de.androidcrypto.storagemanager.MainActivity.this);
+                    unitImagesRVAdapter = new UnitImagesRVAdapter(unitModelFilteredArrayList, UnitImagesListviewActivity.this);
 
                     unitsRV = findViewById(R.id.idRVUnits);
 
                     // setting layout manager for our recycler view.
-                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(de.androidcrypto.storagemanager.MainActivity.this, RecyclerView.VERTICAL, false);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(UnitImagesListviewActivity.this, RecyclerView.VERTICAL, false);
                     unitsRV.setLayoutManager(linearLayoutManager);
 
                     // setting our adapter to recycler view.
-                    unitsRV.setAdapter(unitRVAdapter);
+                    unitsRV.setAdapter(unitImagesRVAdapter);
 
                 }
                 onPrepareOptionsMenu(menu); // zeigt die app-bar wieder vollständig an
@@ -199,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mAdd.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, AddEntryActivity.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, AddEntryActivity.class);
                 startActivity(i);
                 return false;
             }
@@ -209,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mAddUnit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, AddUnitActivity.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, AddUnitActivity.class);
                 startActivity(i);
                 return false;
             }
@@ -220,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mUpdateUnit.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, UpdateUnitActivity.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, UpdateUnitActivity.class);
                 startActivity(i);
                 return false;
             }
@@ -230,17 +186,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mImageHandling.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, ImageHandlingActivity.class);
-                startActivity(i);
-                return false;
-            }
-        });
-
-        MenuItem mUnitImagesListview = menu.findItem(R.id.action_images_listview);
-        mUnitImagesListview.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, UnitImagesListviewActivity.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, ImageHandlingActivity.class);
                 startActivity(i);
                 return false;
             }
@@ -261,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mImportClipboard.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, DatabaseImportClipboard.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, DatabaseImportClipboard.class);
                 startActivity(i);
                 return false;
             }
@@ -271,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mExportMasterkey.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, MasterkeyExportClipboard.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, MasterkeyExportClipboard.class);
                 startActivity(i);
                 return false;
             }
@@ -281,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mExportDatabase.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, DatabaseExportFile.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, DatabaseExportFile.class);
                 startActivity(i);
                 return false;
             }
@@ -291,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mImportDatabase.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, DatabaseImportFile.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, DatabaseImportFile.class);
                 startActivity(i);
                 return false;
             }
@@ -317,7 +263,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mAbout.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                Intent i = new Intent(MainActivity.this, AboutActivity.class);
+                Intent i = new Intent(UnitImagesListviewActivity.this, AboutActivity.class);
                 startActivity(i);
                 return false;
             }
@@ -327,11 +273,11 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         mDeleteAllEntries.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(UnitImagesListviewActivity.this);
                 alertDialog.setTitle("Datenbank löschen");
                 String message = "\nEs werden alle Einträge gelöscht.\n\nDrücken Sie auf LÖSCHEN, um alle\nEinträge endgültig zu löschen.";
                 alertDialog.setMessage(message);
-                RelativeLayout container = new RelativeLayout(MainActivity.this);
+                RelativeLayout container = new RelativeLayout(UnitImagesListviewActivity.this);
                 RelativeLayout.LayoutParams rlParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
                 container.setLayoutParams(rlParams);
                 alertDialog.setView(container);
@@ -339,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dbUnitHandler.deleteAllUnits();
-                        Intent i = new Intent(MainActivity.this, MainActivity.class);
+                        Intent i = new Intent(UnitImagesListviewActivity.this, UnitImagesListviewActivity.class);
                         startActivity(i);
                         finish();
                     }
@@ -359,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
 
     // error dialog
     private void errorAndQuitAlert(String message) {
-        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(UnitImagesListviewActivity.this).create();
         alertDialog.setTitle("Fehler");
         alertDialog.setMessage(message);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
@@ -386,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
     private void displayLicensesAlertDialog() {
         WebView view = (WebView) LayoutInflater.from(this).inflate(R.layout.dialog_licenses, null);
         view.loadUrl("file:///android_asset/open_source_licenses.html");
-        android.app.AlertDialog mAlertDialog = new android.app.AlertDialog.Builder(MainActivity.this).create();
+        android.app.AlertDialog mAlertDialog = new android.app.AlertDialog.Builder(UnitImagesListviewActivity.this).create();
         mAlertDialog = new android.app.AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
                 .setTitle(getString(R.string.action_licenses))
                 .setView(view)
@@ -403,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
     private void displayHelpAlertDialog() {
         WebView view = (WebView) LayoutInflater.from(this).inflate(R.layout.dialog_help, null);
         view.loadUrl("file:///android_asset/help.html");
-        android.app.AlertDialog mAlertDialog = new android.app.AlertDialog.Builder(MainActivity.this).create();
+        android.app.AlertDialog mAlertDialog = new android.app.AlertDialog.Builder(UnitImagesListviewActivity.this).create();
         mAlertDialog = new android.app.AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog_Alert)
                 .setTitle(getString(R.string.action_help))
                 .setView(view)
@@ -416,34 +362,9 @@ public class MainActivity extends AppCompatActivity implements ILockableActivity
         dialog.show(getSupportFragmentManager(), "HelpDialog");
     }
 
-    // sdk checks
-    private void checkSdkVersion() {
-        sdkVersion = Build.VERSION.SDK_INT;
-        // check for SDK 30+
-        if (sdkVersion >= Build.VERSION_CODES.R) {
-            sdkIsMin30 = true;
-        }
-        // check for SDK in range 23-29
-        if (sdkVersion < Build.VERSION_CODES.R &
-                sdkVersion >= Build.VERSION_CODES.M) {
-            sdkIsMin23Max29 = true;
-        }
-    }
-
-    // check if Biometric is ready to use
-    private boolean checkBiometric() {
-        BiometricManager biometricManager = BiometricManager.from(this);
-        int success = biometricManager.canAuthenticate(BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
-        if (success == BiometricManager.BIOMETRIC_SUCCESS) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     // error dialog
     private void alertView(String message) {
-        AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+        AlertDialog alertDialog = new AlertDialog.Builder(UnitImagesListviewActivity.this).create();
         alertDialog.setTitle("Fehler");
         alertDialog.setMessage(message);
         alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",

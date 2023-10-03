@@ -37,12 +37,6 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_images_listview"
-        android:icon="@drawable/ic_baseline_add_circle_outline_24"
-        android:title="unit images list"
-        app:showAsAction="never"/>
-
-    <item
         android:id="@+id/action_add"
         android:icon="@drawable/ic_baseline_add_circle_outline_24"
         android:title="@string/addEntry"

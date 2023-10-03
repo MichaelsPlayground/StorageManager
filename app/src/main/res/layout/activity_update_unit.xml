@@ -309,12 +309,11 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/etUnitImageFilename1Layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="250dp"
+                    android:layout_width="225dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="0dp"
                     android:layout_marginTop="0dp"
-                    android:layout_marginEnd="0dp"
-                    android:layout_weight="2"
+                    android:layout_marginEnd="4dp"
                     android:hint="image filename 1"
                     app:boxCornerRadiusBottomEnd="5dp"
                     app:boxCornerRadiusBottomStart="5dp"
@@ -326,9 +325,8 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etUnitImageFilename1"
-                        android:layout_width="250dp"
+                        android:layout_width="225dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
                         android:ellipsize="end"
                         android:focusable="false"
                         android:text=""
@@ -340,7 +338,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
-                    android:layout_weight="1"
+                    android:layout_marginEnd="2dp"
                     android:text="show"
                     app:icon="@drawable/outline_preview_24" />
 
@@ -358,12 +356,11 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/etUnitImageFilename2Layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="250dp"
+                    android:layout_width="225dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="0dp"
                     android:layout_marginTop="0dp"
-                    android:layout_marginEnd="0dp"
-                    android:layout_weight="2"
+                    android:layout_marginEnd="4dp"
                     android:hint="image filename 2"
                     app:boxCornerRadiusBottomEnd="5dp"
                     app:boxCornerRadiusBottomStart="5dp"
@@ -375,9 +372,8 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etUnitImageFilename2"
-                        android:layout_width="250dp"
+                        android:layout_width="225dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
                         android:ellipsize="end"
                         android:focusable="false"
                         android:text=""
@@ -389,7 +385,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
-                    android:layout_weight="1"
+                    android:layout_marginEnd="2dp"
                     android:text="show"
                     app:icon="@drawable/outline_preview_24" />
 
@@ -407,12 +403,11 @@
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/etUnitImageFilename3Layout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="250dp"
+                    android:layout_width="225dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="0dp"
                     android:layout_marginTop="0dp"
-                    android:layout_marginEnd="0dp"
-                    android:layout_weight="2"
+                    android:layout_marginEnd="4dp"
                     android:hint="image filename 3"
                     app:boxCornerRadiusBottomEnd="5dp"
                     app:boxCornerRadiusBottomStart="5dp"
@@ -424,9 +419,8 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etUnitImageFilename3"
-                        android:layout_width="250dp"
+                        android:layout_width="225dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
                         android:ellipsize="end"
                         android:focusable="false"
                         android:text=""
@@ -438,11 +432,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
-                    android:layout_weight="1"
+                    android:layout_marginEnd="2dp"
                     android:text="show"
                     app:icon="@drawable/outline_preview_24" />
 
             </LinearLayout>
+
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etUnitIdServerLayout"

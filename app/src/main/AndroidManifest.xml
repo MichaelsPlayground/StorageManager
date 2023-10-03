@@ -27,9 +27,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StorageManager">
-        <activity
-            android:name=".ImageHandlingActivity"
-            android:exported="false" />
         <!-- <activity android:name=".AuthenticateActivity"> -->
         <activity
             android:name=".MainActivity"
@@ -44,6 +41,12 @@
         <activity android:name=".UpdateEntryActivity" />
         <activity android:name=".AddUnitActivity" />
         <activity android:name=".UpdateUnitActivity" />
+        <activity
+            android:name=".ImageHandlingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".UnitImagesListviewActivity"
+            android:exported="false" />
         <activity android:name=".DatabaseImportClipboard" />
         <activity android:name=".DatabaseImportFile" />
         <activity android:name=".DatabaseExportFile" />
